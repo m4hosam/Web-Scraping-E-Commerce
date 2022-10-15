@@ -39,7 +39,7 @@ function Cardfunc(props) {
 
             </CardContent >
             <CardActions>
-                <Button variant="contained" style={{ margin: "8px" }}>Details</Button>
+                <Button variant="contained" style={{ margin: "8px" }} href={"/" + props.id}>Details</Button>
             </CardActions>
         </Card >
     );

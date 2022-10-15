@@ -2,6 +2,7 @@ import * as React from 'react';
 import { styled, alpha } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
+import Link from '@mui/material/Link';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import InputBase from '@mui/material/InputBase';
@@ -60,7 +61,7 @@ export default function SearchAppBar() {
                         component="div"
                         sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}
                     >
-                        Logo
+                        <Link href="/" style={{ color: 'white', textDecoration: 'none' }}>Logo</Link>
                     </Typography>
                     <Search>
                         <SearchIconWrapper>
