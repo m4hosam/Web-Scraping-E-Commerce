@@ -37,11 +37,30 @@ const laptopSchema = new mongoose.Schema({
         ref: 'Seller'
     }]
 })
+
+const productSchema = new mongoose.Schema({
+    id: Number,
+    name: String,
+    imgUrl: String,
+    brand: String,
+    series: String,
+    modelNo: String,
+    ops: String,
+    cpuType: String,
+    cpuGen: String,
+    ram: String,
+    diskSize: String,
+    diskType: String,
+    screenSize: String,
+    price: String
+})
 const Laptop = mongoose.model("Laptop", laptopSchema);
 const Seller = mongoose.model("Seller", sellerSchema);
+const Product = mongoose.model("Product", productSchema);
 
 
 
 
 exports.Laptop = Laptop;
 exports.Seller = Seller;
+exports.Product = Product;

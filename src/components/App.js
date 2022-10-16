@@ -3,6 +3,7 @@ import Typography from '@mui/material/Typography';
 import NavBar from './NavBar'
 import Cards from './Cards'
 import AppDetails from './Details/AppDetails'
+import Products from './Products/products'
 import { Route, Routes, useParams } from 'react-router-dom'
 
 
@@ -22,6 +23,8 @@ function App() {
             <Route path='/' element={<Cards />} />
 
             <Route path='/:id' element={<ProductDetails />} />
+
+            <Route path='/products' element={<Products />} />
 
         </Routes>
     </div >)

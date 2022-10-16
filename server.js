@@ -1,4 +1,4 @@
-const { Laptop, Seller } = require("./Database")
+const { Laptop, Seller, Product } = require("./Database")
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
@@ -30,6 +30,22 @@ const newLaptop = new Laptop({
     sellers: []
 })
 
+const newProduct = new Product({
+    id: 4,
+    name: "MSI Modern 15 A11MU-839XTR Intel Core i5 ",
+    imgUrl: "https://productimages.hepsiburada.net/s/139/1500/110000091575803.jpg",
+    brand: "ASUS",
+    series: "ROG Strix SCAR 15 Gaming Laptop",
+    modelNo: "G533ZW-AS94",
+    ops: "Free Dos",
+    cpuType: "Intel Core i7",
+    cpuGen: "11",
+    ram: "16 GB",
+    diskSize: "1 TB",
+    diskType: "SSD",
+    screenSize: "15.6 Inches",
+    price: "50,000 TL"
+})
 
 const seller1 = new Seller({
     id: 3,
@@ -88,6 +104,18 @@ app.get('/seller1', cors(), async function (req, res) {
 app.get('/', cors(), async function (req, res) {
 
     Laptop.find({}).populate('sellers').exec(async function (err, docs) {
+        if (err) {
+            console.log(err);
+        }
+        else {
+            res.send(docs);
+        }
+    })
+})
+
+app.get('/products', cors(), async function (req, res) {
+    // await newProduct.save();
+    Product.find({}, async function (err, docs) {
         if (err) {
             console.log(err);
         }
