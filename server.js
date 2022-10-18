@@ -1,4 +1,5 @@
 const { Laptop, Seller, Product } = require("./Database")
+const { scrapeLaptop, scrapePage } = require('./n11')
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
@@ -7,10 +8,26 @@ const cors = require("cors")
 // important to make bodyParser work effieciently
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json())
+
 app.use(cors());
 app.get('/favicon.ico', (req, res) => {
     return '404'
 })
+
+
+//Web Scraping 
+// let count = 1;
+// // for (let j = 1; j < 10; j++) {
+// scrapePage(`https://www.n11.com/bilgisayar/dizustu-bilgisayar?ipg=1`).then(async laptopUrl => {
+
+//     //scrapes every laptop and its attributes for the current page
+//     for (let i = 0; i < laptopUrl.length; i++) {
+//         await scrapeLaptop(laptopUrl[i], count);
+//         count += 1;
+//     }
+// })
+
+
 
 //--------------------
 const newLaptop = new Laptop({
@@ -122,6 +139,20 @@ app.get('/products', cors(), async function (req, res) {
         else {
             res.send(docs);
         }
+    })
+})
+
+app.get('/products/:id', cors(), async function (req, res) {
+
+    Product.findOne({ "id": req.params.id.toString() }, async function (err, docs) {
+        if (err) {
+            console.log("Error id params" + err);
+
+        }
+        else {
+            res.send(docs);
+        }
+
     })
 })
 
