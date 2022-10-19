@@ -156,6 +156,19 @@ app.get('/products/:id', cors(), async function (req, res) {
     })
 })
 
+app.post('/search', async function (req, res) {
+    const key = req.body.key;
+    // Scrap the websites for this key
+    // Send the first match object
+    console.log(key);
+    res.send(newProduct);
+})
+
+app.post('/publish', async function (req, res) {
+    const key = req.body;
+    console.log(key);
+})
+
 
 
 app.get('/:id', function (req, res) {

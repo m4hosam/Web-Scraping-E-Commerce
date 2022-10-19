@@ -36,8 +36,6 @@ function MediaCard() {
     return (
         <Grid container spacing={2}>
             {laptops.map(CreateCard)}
-            {laptops.map(CreateCard)}
-            {laptops.map(CreateCard)}
         </Grid>
     );
 }
