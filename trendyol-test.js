@@ -16,51 +16,47 @@ mongoose.connect("mongodb://localhost:27017/test", { useNewUrlParser: true, useU
 
 
 //gets all model number from database
-async function getModelNumbers(){
+async function getModelNumbers() {
 
-    var array=[];
+    var array = [];
     const app = await Laptop.find({}).exec();
 
     app.forEach((laptop) => {
 
-        if(laptop.modelNo){
-            array.push(laptop.modelNo.toUpperCase().trim().replace(/ /g,'-'))
+        if (laptop.modelNo) {
+            array.push(laptop.modelNo.toUpperCase().trim().replace(/ /g, '-'))
         }
     })
-    console.log("got model numbers")
-    return new Promise((resolve,reject) => {
+    console.log(array)
+    return new Promise((resolve, reject) => {
         resolve(array)
     })
 }
 
 //finds best laptop with provided model number
-async function scrapePage(url, modelNo){
-    
+async function scrapePage(url, modelNo) {
+
     const browser = await puppeteer.launch()
     const page = await browser.newPage();
-    await page.goto(url,{timeout: 0});
-    console.log("hi")
+    await page.goto(url, { timeout: 0 });
+
     //takes all results from search and puts them in array
     //DOESNT WORK returning undefined and not printing console.logs written inside
     const laptopCardsWeb = await page.evaluate(() => {
-        console.log("i")
         //console.log(document.querySelector(".p-card-chldrn-cntnr.card-border"), el => el)
-        //const list = Array.from(document.querySelectorAll(".p-card-chldrn-cntnr.card-border"))
-        const nodeList = Array.from(document.querySelectorAll(".p-card-chldrn-cntnr.card-border")).map(el => {
-            const newObj = {
-                title: el.firstChild.getElementsByClassName("prdct-desc-cntnr-name")[0].textContent,
-                url: el.firstChild.href,
-                price: el.firstChild.getElementsByClassName("prc-box-dscntd")[0].textContent
-            }
-            return newObj
-        })
 
-        //const list = Array.from(nodeList)
-        console.log(nodeList)
-        return nodeList
-    }) 
-    console.log(laptopCardsWeb)
-    
+        const list = (document.querySelectorAll(".p-card-chldrn-cntnr.card-border > a")[0].getAttribute('href'))
+
+        // console.log(list)
+        return list
+    })
+
+    console.log("https://www.trendyol.com" + laptopCardsWeb)
+    // What to do is :
+    // get the first element 
+    //  search od the model number in the product name 
+    // if not there don't consider it
+
     /**
      * TO DO:
      * filter objects in obj array based on if they contain model number in title or not
@@ -68,20 +64,20 @@ async function scrapePage(url, modelNo){
      * saves it to database
      */
     browser.close()
-    
+
 }
 
 //will most likely not be used anymore, old function
-async function scrapeLaptop(laptopUrl, modelNo, browser){
+async function scrapeLaptop(laptopUrl, modelNo, browser) {
 
     console.log(laptopUrl)
     const page = await browser.newPage();
-    await page.goto(laptopUrl,{timeout: 0})
-    
+    await page.goto(laptopUrl, { timeout: 0 })
+
     const laptopTitle = await page.evaluate(() => {
         return document.querySelector(".pr-new-br > span").textContent.toUpperCase()
     })
-    
+
     const laptopPrice = await page.evaluate(() => {
         return document.querySelector(".prc-dsc").textContent
     })
@@ -92,7 +88,7 @@ async function scrapeLaptop(laptopUrl, modelNo, browser){
         seller: "trendyol"
     })
 
-    if(laptopTitle.includes(modelNo)){
+    if (laptopTitle.includes(modelNo)) {
         await Laptop.findOne({ "modelNo": modelNo }, async function (err, docs) {
             await seller.save();
             docs.sellers.push(seller);
@@ -102,22 +98,20 @@ async function scrapeLaptop(laptopUrl, modelNo, browser){
     }
 
     page.close()
-    
+
 }
 
-async function trendyol(){
+async function trendyol() {
 
     const laptopModelNumbers = await getModelNumbers()
-    
-    for(modelNo of laptopModelNumbers){
-        
+
+    for (modelNo of laptopModelNumbers) {
+
         console.log(modelNo)
         //searches for model number in trendyol
         await scrapePage(`https://www.trendyol.com/sr?q=${modelNo}`, modelNo)
 
     }
-    //const modelNo = laptopModelNumbers[0]
-    //await scrapePage(`https://www.trendyol.com/sr?q=${modelNo}`, modelNo)
 
 }
 
