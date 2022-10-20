@@ -27,7 +27,7 @@ async function getModelNumbers(){
             array.push(laptop.modelNo.toUpperCase().trim().replace(/ /g,'-'))
         }
     })
-    console.log(array)
+    console.log("got model numbers")
     return new Promise((resolve,reject) => {
         resolve(array)
     })
@@ -39,31 +39,27 @@ async function scrapePage(url, modelNo){
     const browser = await puppeteer.launch()
     const page = await browser.newPage();
     await page.goto(url,{timeout: 0});
-
+    console.log("hi")
     //takes all results from search and puts them in array
     //DOESNT WORK returning undefined and not printing console.logs written inside
     const laptopCardsWeb = await page.evaluate(() => {
+        console.log("i")
         //console.log(document.querySelector(".p-card-chldrn-cntnr.card-border"), el => el)
+        //const list = Array.from(document.querySelectorAll(".p-card-chldrn-cntnr.card-border"))
+        const nodeList = Array.from(document.querySelectorAll(".p-card-chldrn-cntnr.card-border")).map(el => {
+            const newObj = {
+                title: el.firstChild.getElementsByClassName("prdct-desc-cntnr-name")[0].textContent,
+                url: el.firstChild.href,
+                price: el.firstChild.getElementsByClassName("prc-box-dscntd")[0].textContent
+            }
+            return newObj
+        })
 
-        const list = Array.from(document.querySelectorAll(".p-card-chldrn-cntnr.card-border"))
-        
-        console.log(list)
-        return list
+        //const list = Array.from(nodeList)
+        console.log(nodeList)
+        return nodeList
     }) 
-    
-    //creates an object out of every result, contains title, price and link
-    //saves to array of objects
-    const laptopCards = []
-    for(node of laptopCardsWeb){
-        const newObj = {
-            title: node.firstChild.getElementsByClassName("prdct-desc-cntnr-name")[0].textContent,
-            url: node.firstChild.href,
-            price: node.firstChild.getElementsByClassName("prc-box-dscntd")[0].textContent
-        }
-        laptopCards.push(newObj)
-    }
-    
-    //console.log(laptopCards)
+    console.log(laptopCardsWeb)
     
     /**
      * TO DO:
@@ -120,6 +116,8 @@ async function trendyol(){
         await scrapePage(`https://www.trendyol.com/sr?q=${modelNo}`, modelNo)
 
     }
+    //const modelNo = laptopModelNumbers[0]
+    //await scrapePage(`https://www.trendyol.com/sr?q=${modelNo}`, modelNo)
 
 }
 
