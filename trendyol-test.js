@@ -60,7 +60,7 @@ async function scrapePage(url, modelNo){
         return nodeList
     }) 
 
-    // const bestLaptop = laptopCardsWeb[0]
+    const bestLaptop = laptopCardsWeb[0]
     // console.log(bestLaptop.title.toUpperCase())
     // console.log(modelNo.trim())
     // console.log(modelNo)
