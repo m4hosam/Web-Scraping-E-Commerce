@@ -1,5 +1,7 @@
 const { Laptop, Seller, Product } = require("./Database")
 const n11 = require('./n11')
+const trendyol = require('./trendyol')
+const hepsiburada = require('./hepsiburada')
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
@@ -16,7 +18,9 @@ app.get('/favicon.ico', (req, res) => {
 
 
 // scraping part
-n11();
+// n11();
+// trendyol();
+// hepsiburada();
 
 
 //--------------------
@@ -127,7 +131,7 @@ app.get('/products', cors(), async function (req, res) {
 
 app.get('/products/:id', cors(), async function (req, res) {
 
-    Product.findOne({ "id": req.params.id.toString() }, async function (err, docs) {
+    Product.findOne({ _id: req.params.id }, async function (err, docs) {
         if (err) {
             console.log("Error id params" + err);
 
@@ -155,7 +159,7 @@ app.post('/publish', async function (req, res) {
 
 
 app.get('/:id', function (req, res) {
-    Laptop.findOne({ "id": req.params.id.toString() }).populate('sellers').exec(async function (err, docs) {
+    Laptop.findOne({ _id: req.params.id }).populate('sellers').exec(async function (err, docs) {
         if (err) {
             console.log("Error id params" + err);
 

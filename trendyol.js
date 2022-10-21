@@ -2,17 +2,8 @@
 const puppeteer = require('puppeteer');
 const mongoose = require('mongoose')
 const { Laptop, Seller } = require("./Database")
-var MongoClient = require('mongodb').MongoClient;
 
-var dbURL = "mongodb://localhost:27017/test";
 
-mongoose.connect("mongodb://localhost:27017/test", { useNewUrlParser: true, useUnifiedTopology: true })
-    .then(() => {
-        console.log('Connected')
-    })
-    .catch(er => {
-        console.log('connection Error')
-    });
 
 
 //gets all model number from database
@@ -35,16 +26,12 @@ async function getModelNumbers() {
 
 //finds best laptop with provided model number
 async function scrapePage(url, modelNo) {
-
     const browser = await puppeteer.launch()
     const page = await browser.newPage()
     await page.goto(url, { timeout: 0 })
     //takes all results from search and puts them in array
     //DOESNT WORK returning undefined and not printing console.logs written inside
     const laptopCardsWeb = await page.evaluate(() => {
-        console.log("i")
-        //console.log(document.querySelector(".p-card-chldrn-cntnr.card-border"), el => el)
-        //const list = Array.from(document.querySelectorAll(".p-card-chldrn-cntnr.card-border"))
 
         const nodeList = Array.from(document.querySelectorAll(".p-card-chldrn-cntnr.card-border")).map(el => {
             /*if(el.firstChild.getElementsByClassName("prdct-desc-cntnr-name")[0].textContent.toUppercase().includes(modelNo))*/
@@ -56,47 +43,38 @@ async function scrapePage(url, modelNo) {
             return newObj
 
         })
-        //const list = Array.from(nodeList)
+
         return nodeList
     })
 
     const bestLaptop = laptopCardsWeb[0]
-    // console.log(bestLaptop.title.toUpperCase())
-    // console.log(modelNo.trim())
-    // console.log(modelNo)
-    // console.log(bestLaptop.title.toUpperCase().includes(modelNo.trim()))
 
-    if (bestLaptop.title.toUpperCase().includes(modelNo.trim())) {
+
+    if (bestLaptop.title?.toUpperCase().includes(modelNo.trim())) {
         const seller = new Seller({
             productUrl: bestLaptop.url,
             price: bestLaptop.price,
             seller: "trendyol"
         })
 
-        Laptop.findOne({ "modelNo": modelNo }, async function (err, docs) {
+
+
+        await Laptop.findOne({ modelNo: modelNo }).populate('sellers').exec(async function (err, docs) {
             if (docs) {
-                console.log("Docs Before: ")
-                console.log(docs)
+                // console.log("Docs Before: ")
+                // console.log(docs)
+                // if i scraped the laptop before don't add it
+                // if (docs.sellers[1]?.productUrl != seller.productUrl) {
                 await seller.save();
                 docs.sellers.push(seller);
                 await docs.save();
-                console.log("Docs After: ")
-                console.log(docs)
+                // console.log("Docs After: ")
+                // console.log(docs)
+                // }
+
             }
         })
     }
-
-
-    /**
-     * TO DO:
-     * filter objects in obj array based on if they contain model number in title or not
-     * searches for the cheapest laptop in array
-     * saves it to database
-     */
-
-
-
-
 
     browser.close()
 
@@ -153,4 +131,6 @@ async function trendyol() {
 
 }
 
-trendyol()
+// trendyol()
+
+module.exports = trendyol;
