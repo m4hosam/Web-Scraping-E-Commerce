@@ -11,7 +11,7 @@ import './App.css';
 function CreateSellers(sellerDetails) {
     console.log(sellerDetails);
     return <CardSeller
-        key={sellerDetails.id}
+        key={sellerDetails._id}
         productUrl={sellerDetails.productUrl}
         seller={sellerDetails.seller}
         price={sellerDetails.price}

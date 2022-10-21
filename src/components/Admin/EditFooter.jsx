@@ -16,7 +16,6 @@ function createData(name, value) {
 
 function Footer(props) {
     const rows = [
-        createData('Model', props.laptop.series),
         createData('Model No', props.laptop.modelNo),
         createData('Operating System', props.laptop.ops),
         createData('CPU Type', props.laptop.cpuType),

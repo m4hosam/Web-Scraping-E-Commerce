@@ -6,7 +6,7 @@ import Grid from '@mui/material/Grid';
 function CreateCard(cardDetails) {
     return <Grid item xs={12} sm={6} md={3} >
         <ProductCard
-            key={cardDetails.id}
+            key={cardDetails._id}
             id={cardDetails.id}
             imgUrl={cardDetails.imgUrl}
             name={cardDetails.name}

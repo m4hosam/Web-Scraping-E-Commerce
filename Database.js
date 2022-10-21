@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 mongoose.connect("mongodb://localhost:27017/webScraping", { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => {
-        console.log('Conneccted')
+        console.log('Conneccted to the DB')
     })
     .catch(er => {
         console.log('connection Error')
@@ -19,11 +19,9 @@ const sellerSchema = new mongoose.Schema({
 })
 
 const laptopSchema = new mongoose.Schema({
-    id: Number,
     name: String,
     imgUrl: String,
     brand: String,
-    series: String,
     modelNo: String,
     ops: String,
     cpuType: String,
@@ -39,11 +37,9 @@ const laptopSchema = new mongoose.Schema({
 })
 
 const productSchema = new mongoose.Schema({
-    id: Number,
     name: String,
     imgUrl: String,
     brand: String,
-    series: String,
     modelNo: String,
     ops: String,
     cpuType: String,

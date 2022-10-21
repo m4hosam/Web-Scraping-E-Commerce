@@ -1,10 +1,9 @@
 const puppeteer = require('puppeteer');
-const mongoose = require('mongoose')
 const { Laptop, Seller } = require("./Database")
 
 
 //laptop attributes as written in n11 description
-const attributes = ['Marka', 'Model', 'İşletim Sistemi', 'İşlemci', 'Bellek Kapasitesi', 'Disk Kapasitesi', 'Disk türü', 'Ekran Boyutu', 'Price', 'Website', 'img', 'title']
+const attributes = ['Marka', 'Model', 'İşletim Sistemi', 'İşlemci', "İşlemci Modeli", 'Bellek Kapasitesi', 'Disk Kapasitesi', 'Disk Türü', 'Ekran Boyutu', 'Price', 'Website', 'img', 'title']
 
 //gets all the laptops' urls that are present in a page and returns
 async function scrapePage(url) {
@@ -22,9 +21,11 @@ async function scrapePage(url) {
     });
 }
 
-async function scrapeLaptop(url, num) {
+async function scrapeLaptop(url) {
+    console.log("opening:")
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
+    console.log("Loading....")
     await page.goto(url, { timeout: 0 });
     const doc = {}
 
@@ -50,7 +51,10 @@ async function scrapeLaptop(url, num) {
         return list
     })
 
-
+    // console.log("attributeListTitle: ")
+    // console.log(attributeListTitle)
+    // console.log("attributeListProp: ")
+    // console.log(attributeListProp)
     //filters the attributes and only takes the ones needed in listItem
     attributeListTitle.forEach((listItem, i = 0) => {
         if (attributes.indexOf(listItem) >= 0) {
@@ -66,23 +70,22 @@ async function scrapeLaptop(url, num) {
     // }
 
     const seller = new Seller({
-        id: num,
         productUrl: url,
         price: doc["Price"],
         seller: "n11"
     })
 
     const laptop = new Laptop({
-        id: num,
         brand: doc["Marka"],
         name: doc["title"],
         imgUrl: doc["img"],
         modelNo: doc["Model"],
         ops: doc["İşletim Sistemi"],
         cpuType: doc["İşlemci"],
+        cpuGen: doc["İşlemci Modeli"],
         ram: doc["Bellek Kapasitesi"],
         diskSize: doc["Disk Kapasitesi"],
-        diskType: doc["Disk türü"],
+        diskType: doc["Disk Türü"],
         screenSize: doc["Ekran Boyutu"],
         sellers: []
     })
@@ -91,21 +94,30 @@ async function scrapeLaptop(url, num) {
 
 
     //saves to database
-    Laptop.findOne({ "id": num }, async function (err, docs) {
+    Laptop.findOne({ _id: laptop._id }, async function (err, docs) {
         await seller.save();
         docs.sellers.push(seller);
         await docs.save();
-        console.log("Loaded Count: " + num)
+        // console.log(docs)
     })
-
+    console.log("Done.")
     browser.close();
 }
 
 //gets every laptop url in n11 in 9 pages
 
+async function n11() {
+    for (let j = 1; j < 10; j++) {
+        await scrapePage(`https://www.n11.com/bilgisayar/dizustu-bilgisayar?ipg=${j}`).then(async laptopUrl => {
 
+            //scrapes every laptop and its attributes for the current page
+            for (let i = 0; i < laptopUrl.length; i++) {
+                await scrapeLaptop(laptopUrl[i]);
+            }
+        })
+    }
+}
 
+// n11();
 
-
-exports.scrapePage = scrapePage;
-exports.scrapeLaptop = scrapeLaptop;
+module.exports = n11;
