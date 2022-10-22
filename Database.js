@@ -5,7 +5,7 @@ mongoose.connect("mongodb://localhost:27017/webScraping", { useNewUrlParser: tru
         console.log('Conneccted to the DB')
     })
     .catch(er => {
-        console.log('connection Error')
+        console.log('Connection Error to the DB')
     });
 
 // Mongodb

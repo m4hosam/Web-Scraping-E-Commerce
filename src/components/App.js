@@ -1,7 +1,7 @@
 import React from 'react';
 import Typography from '@mui/material/Typography';
 import NavBar from './NavBar'
-import Cards from './Cards'
+import Home from './Home'
 import AppDetails from './Details/AppDetails'
 import AppDetailsEC from './Products/ProductDetails'
 import Products from './Products/products'
@@ -28,7 +28,7 @@ function App() {
 
         </Typography>
         <Routes>
-            <Route path='/' element={<Cards />} />
+            <Route path='/' element={<Home />} />
 
             <Route path='/:id' element={<ProductDetails />} />
 

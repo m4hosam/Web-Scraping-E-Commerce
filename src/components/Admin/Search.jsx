@@ -18,10 +18,10 @@ function Admin() {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        const post = { key: name }
+        const post = { searchKey: name }
 
 
-        await axios.post("http://localhost:5000/search", post)
+        await axios.post("http://localhost:5000/adminSearch", post)
             .then((response) => {
                 console.log(response.data)
                 console.log("----------------------------\n");

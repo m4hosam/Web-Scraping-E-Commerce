@@ -9,7 +9,7 @@ import CardSeller from './CardSeller'
 import './App.css';
 
 function CreateSellers(sellerDetails) {
-    console.log(sellerDetails);
+    // console.log(sellerDetails);
     return <CardSeller
         key={sellerDetails._id}
         productUrl={sellerDetails.productUrl}
@@ -20,7 +20,7 @@ function CreateSellers(sellerDetails) {
 
 
 function Cardfunc(props) {
-    console.log(props.sellers);
+    // console.log(props.sellers);
     return (
         <Card sx={{ maxWidth: 365, minHeight: 400 }} >
             <CardMedia

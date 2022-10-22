@@ -18,26 +18,18 @@ app.get('/favicon.ico', (req, res) => {
 
 
 // scraping part
-// n11();
-// trendyol();
-// hepsiburada();
+async function scrapSites() {
+    // limit n11 to one page scraping
+    await n11(2);
+    await trendyol();
+    await hepsiburada();
+}
+
+// scrapSites();
 
 
 //--------------------
-const newLaptop = new Laptop({
-    name: "MSI Modern 15 A11MU-839XTR Intel Core i5 ",
-    imgUrl: "https://productimages.hepsiburada.net/s/139/1500/110000091575803.jpg",
-    brand: "ASUS",
-    modelNo: "G533ZW-AS94",
-    ops: "Free Dos",
-    cpuType: "Intel Core i7",
-    cpuGen: "11",
-    ram: "16 GB",
-    diskSize: "1 TB",
-    diskType: "SSD",
-    screenSize: "15.6 Inches",
-    sellers: []
-})
+
 
 const newProduct = new Product({
     name: "MSI Modern 15 A11MU-839XTR Intel Core i5 ",
@@ -54,52 +46,7 @@ const newProduct = new Product({
     price: "50,000 TL"
 })
 
-const seller1 = new Seller({
-    seller: "Hepsiburda",
-    price: "50.000 TL",
-    productUrl: "https://www.hepsiburada.com/msi-modern-15-a11mu-839xtr-intel-core-i5-1155g7-8gb-512gb-ssd-freedos-15-6-fhd-tasinabilir-bilgisayar-p-HBCV00000ZAY8H",
-    rate: "4.0"
-})
-const seller2 = new Seller({
-    seller: "n11",
-    price: "20.000 TL",
-    productUrl: "https://www.hepsiburada.com/msi-modern-15-a11mu-839xtr-intel-core-i5-1155g7-8gb-512gb-ssd-freedos-15-6-fhd-tasinabilir-bilgisayar-p-HBCV00000ZAY8H",
-    rate: "4.0"
-})
-const seller3 = new Seller({
-    seller: "Trendyol",
-    price: "30.000 TL",
-    productUrl: "https://www.hepsiburada.com/msi-modern-15-a11mu-839xtr-intel-core-i5-1155g7-8gb-512gb-ssd-freedos-15-6-fhd-tasinabilir-bilgisayar-p-HBCV00000ZAY8H",
-    rate: "4.0"
-})
 
-
-app.get('/seller', cors(), async function (req, res) {
-    // await newLaptop.save();
-    Laptop.findOne({ "id": 2 }, async function (err, docs) {
-        await seller1.save();
-        await seller2.save();
-        await seller3.save();
-        docs.sellers.push(seller1);
-        docs.sellers.push(seller2);
-        docs.sellers.push(seller3);
-        await docs.save();
-    })
-    res.send("Data Saved")
-})
-app.get('/seller1', cors(), async function (req, res) {
-    await newLaptop.save();
-    Laptop.findOne({ "id": 3 }, async function (err, docs) {
-        await seller1.save();
-        await seller2.save();
-        await seller3.save();
-        docs.sellers.push(seller1);
-        docs.sellers.push(seller2);
-        docs.sellers.push(seller3);
-        await docs.save();
-    })
-    res.send("Data Saved")
-})
 //-------------------
 
 
@@ -113,6 +60,27 @@ app.get('/', cors(), async function (req, res) {
         }
         else {
             res.send(docs);
+        }
+    })
+})
+
+app.post('/search', cors(), async function (req, res) {
+    const search = req.body.searchKey;
+    // console.log("searchKey: " + search)
+
+    Laptop.find({
+        $or: [{ "name": { "$regex": search, "$options": "i" } },
+        { modelNo: { "$regex": search, "$options": "i" } }
+        ]
+    }).populate('sellers').exec(async function (err, docs) {
+        if (err) {
+            console.log(err);
+        }
+        else {
+            // console.log(docs)
+            res.send(docs);
+
+
         }
     })
 })
@@ -143,16 +111,28 @@ app.get('/products/:id', cors(), async function (req, res) {
     })
 })
 
-app.post('/search', async function (req, res) {
+app.post('/adminSearch', async function (req, res) {
     const key = req.body.key;
-    // Scrap the websites for this key
+    // First search in the DB if there -> Get -> Update
+    // We can Make an Update route
+    // Else : Scrap the websites for this key
     // Send the first match object
+    // Hit the publish route
+
     console.log(key);
     res.send(newProduct);
 })
 
 app.post('/publish', async function (req, res) {
     const key = req.body;
+    // Publish route gets hit in the scraping section 
+    console.log(key);
+})
+
+app.post('/update', async function (req, res) {
+    const key = req.body;
+    // Update route gets hit in the updating product section 
+    // 
     console.log(key);
 })
 
@@ -175,6 +155,6 @@ app.get('/:id', function (req, res) {
 
 
 
-app.listen(process.env.PORT || 5000, function () {
-    console.log("Connected To The Server");
+app.listen(5000, function () {
+    console.log("Connected To Server :5000");
 })

@@ -106,8 +106,8 @@ async function scrapeLaptop(url) {
 
 //gets every laptop url in n11 in 9 pages
 
-async function n11() {
-    for (let j = 1; j < 10; j++) {
+async function n11(limit) {
+    for (let j = 1; j < limit; j++) {
         await scrapePage(`https://www.n11.com/bilgisayar/dizustu-bilgisayar?ipg=${j}`).then(async laptopUrl => {
 
             //scrapes every laptop and its attributes for the current page
