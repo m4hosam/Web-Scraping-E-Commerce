@@ -44,32 +44,42 @@ async function scrapePage(url, modelNo) {
         let productPrice = document.querySelectorAll('[data-test-id="price-current-price"]')[0]?.textContent
         //console.log(node)
         const newObj = {
-            title: node.firstChild?.title,
-            url: node.firstChild?.href,
+            title: node?.firstChild.title,
+            url: node?.firstChild.href,
             price: productPrice
         }
         return newObj
     })
     // console.log(bestLaptop)
 
-    if (bestLaptop.title?.toUpperCase().includes(modelNo.trim())) {
-        console.log(bestLaptop)
+    if (bestLaptop?.title?.toUpperCase().includes(modelNo.trim())) {
+        // console.log(bestLaptop)
         const seller = new Seller({
             productUrl: bestLaptop.url,
             price: bestLaptop.price,
             seller: "hepsiburada"
         })
 
-        Laptop.findOne({ modelNo: modelNo }, async function (err, docs) {
+        await Laptop.findOne({ modelNo: modelNo }).populate('sellers').exec(async function (err, docs) {
 
             // docs.sellers.filter((obj) =>
             //     JSON.stringify(obj).toLowerCase().includes(seller.productUrl.toLowerCase())
             // )
             if (docs) {
-                await seller.save();
-                docs.sellers.push(seller);
-                await docs.save();
-                console.log(docs)
+                let obj = docs.sellers?.find(o => o.productUrl === seller.productUrl);
+                // console.log(obj)
+                if (!obj) {
+                    // already saved before
+
+                    await seller.save();
+                    docs.sellers.push(seller);
+                    await docs.save();
+                    // console.log(docs)
+                    console.log("saved...")
+                }
+                else {
+                    console.log("already saved before")
+                }
             }
         })
     }

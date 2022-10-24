@@ -1,6 +1,7 @@
 const { Laptop, Seller, Product } = require("./Database")
 const n11 = require('./n11')
 const trendyol = require('./trendyol')
+const teknosa = require('./teknosa')
 const hepsiburada = require('./hepsiburada')
 const express = require("express");
 const app = express();
@@ -20,12 +21,16 @@ app.get('/favicon.ico', (req, res) => {
 // scraping part
 async function scrapSites() {
     // limit n11 to one page scraping
-    await n11(2);
-    await trendyol();
+    // await n11(7);
+    // await trendyol();
     await hepsiburada();
+    // await teknosa()
 }
 
 // scrapSites();
+
+
+
 
 
 //--------------------

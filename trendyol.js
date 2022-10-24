@@ -50,12 +50,14 @@ async function scrapePage(url, modelNo) {
     const bestLaptop = laptopCardsWeb[0]
 
 
-    if (bestLaptop.title?.toUpperCase().includes(modelNo.trim())) {
+    if (bestLaptop?.title?.toUpperCase().includes(modelNo.trim())) {
         const seller = new Seller({
             productUrl: bestLaptop.url,
             price: bestLaptop.price,
             seller: "trendyol"
         })
+
+        // Seller.findOne({productUrl: seller.productUrl})
 
 
 
@@ -65,9 +67,17 @@ async function scrapePage(url, modelNo) {
                 // console.log(docs)
                 // if i scraped the laptop before don't add it
                 // if (docs.sellers[1]?.productUrl != seller.productUrl) {
-                await seller.save();
-                docs.sellers.push(seller);
-                await docs.save();
+                let obj = docs.sellers?.find(o => o.productUrl === seller.productUrl);
+                if (!obj) {
+                    await seller.save();
+                    docs.sellers.push(seller);
+                    await docs.save();
+                    console.log("saved...")
+                }
+                else {
+                    console.log("already saved before")
+                }
+
                 // console.log("Docs After: ")
                 // console.log(docs)
                 // }
@@ -80,39 +90,6 @@ async function scrapePage(url, modelNo) {
 
 }
 
-//will most likely not be used anymore, old function
-async function scrapeLaptop(laptopUrl, modelNo, browser) {
-
-    console.log(laptopUrl)
-    const page = await browser.newPage();
-    await page.goto(laptopUrl, { timeout: 0 })
-
-    const laptopTitle = await page.evaluate(() => {
-        return document.querySelector(".pr-new-br > span").textContent.toUpperCase()
-    })
-
-    const laptopPrice = await page.evaluate(() => {
-        return document.querySelector(".prc-dsc").textContent
-    })
-
-    const seller = new Seller({
-        productUrl: laptopUrl,
-        price: laptopPrice,
-        seller: "trendyol"
-    })
-
-    if (laptopTitle.includes(modelNo.trim())) {
-        await Laptop.findOne({ "modelNo": modelNo }, async function (err, docs) {
-            await seller.save();
-            docs.sellers.push(seller);
-            await docs.save();
-            console.log(docs)
-        })
-    }
-
-    page.close()
-
-}
 
 async function trendyol() {
 

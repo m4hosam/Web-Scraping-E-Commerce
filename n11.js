@@ -90,16 +90,27 @@ async function scrapeLaptop(url) {
         sellers: []
     })
 
-    await laptop.save()
+    await Laptop.findOne({ name: laptop.name }, async function (err, docs) {
+        if (docs) {
+            console.log("already saved before")
+            // console.log(docs)
+        }
+        else {
+            await laptop.save();
+            await Laptop.findOne({ _id: laptop._id }, async function (err, docs) {
+                await seller.save();
+                docs.sellers.push(seller);
+                await docs.save();
+                console.log("saved...")
+                // console.log(docs)
+            }).clone().catch(function (err) { console.log(err) })
+        }
+    }).clone().catch(function (err) { console.log(err) })
+
 
 
     //saves to database
-    Laptop.findOne({ _id: laptop._id }, async function (err, docs) {
-        await seller.save();
-        docs.sellers.push(seller);
-        await docs.save();
-        // console.log(docs)
-    })
+
     console.log("Done.")
     browser.close();
 }
@@ -108,7 +119,7 @@ async function scrapeLaptop(url) {
 
 async function n11(limit) {
     for (let j = 1; j < limit; j++) {
-        await scrapePage(`https://www.n11.com/bilgisayar/dizustu-bilgisayar?ipg=${j}`).then(async laptopUrl => {
+        await scrapePage(`https://www.n11.com/bilgisayar/dizustu-bilgisayar?ipg=${j}&pg=${j}`).then(async laptopUrl => {
 
             //scrapes every laptop and its attributes for the current page
             for (let i = 0; i < laptopUrl.length; i++) {

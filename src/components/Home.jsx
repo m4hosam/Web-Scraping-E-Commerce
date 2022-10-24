@@ -52,7 +52,7 @@ function MediaCard() {
             label="Search"
             type="search"
             variant="standard"
-            style={{ width: "90%", margin: "2rem 3rem" }}
+            style={{ width: "90%", margin: "0rem 3rem 4rem" }}
             onChange={handleSearch}
         />
         <Grid container spacing={2}>
