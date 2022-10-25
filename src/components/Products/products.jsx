@@ -31,8 +31,6 @@ function Details() {
     return (
         <Grid container spacing={2}>
             {products.map(CreateCard)}
-            {products.map(CreateCard)}
-            {products.map(CreateCard)}
         </Grid>
 
     );

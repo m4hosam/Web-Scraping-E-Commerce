@@ -9,7 +9,7 @@ import Button from '@mui/material/Button';
 
 
 function EditDetails() {
-
+    const navigate = useNavigate();
     const laptop = useLocation().state;
 
     const [brand, setbrand] = useState(laptop.brand);
@@ -24,6 +24,7 @@ function EditDetails() {
     const [diskSize, setdiskSize] = useState(laptop.diskSize);
     const [diskType, setdiskType] = useState(laptop.diskType);
     const [screenSize, setscreenSize] = useState(laptop.screenSize);
+    const [id, setId] = useState(laptop._id);
 
 
     var array = [
@@ -68,6 +69,7 @@ function EditDetails() {
     const handleSubmit = async (event) => {
         event.preventDefault();
         const post = {
+            _id: id,
             name: name,
             imgUrl: laptop.imgUrl,
             brand: brand,
@@ -82,11 +84,11 @@ function EditDetails() {
             screenSize: screenSize,
             price: price
         };
-        console.log("post----------");
-        console.log(post);
+        // console.log("post----------");
+        // console.log(post);
         await axios.post("http://localhost:5000/publish", post);
 
-        // navigate("/editLaptop");
+        navigate("/products");
 
     }
 

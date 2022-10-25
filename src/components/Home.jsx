@@ -3,11 +3,10 @@ import axios from 'axios';
 import './App.css';
 import Card from './Card'
 import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
-
-
-
-
+import Button from '@mui/material/Button';
+import ButtonGroup from '@mui/material/ButtonGroup';
 
 function CreateCard(cardDetails) {
     return <Grid item xs={12} sm={6} md={3} >
@@ -46,19 +45,47 @@ function MediaCard() {
             });
     }
     // console.log(props.laptops)
-    return (<>
-        <TextField
-            id="standard-search"
-            label="Search"
-            type="search"
-            variant="standard"
-            style={{ width: "90%", margin: "0rem 3rem 4rem" }}
-            onChange={handleSearch}
-        />
-        <Grid container spacing={2}>
-            {laptops.map(CreateCard)}
-        </Grid>
-    </>
+    return (
+        // <Box
+        //     sx={{
+        //         display: 'flex',
+        //         justifyContent: 'center',
+        //         flexDirection: 'column',
+        //         alignItems: 'center',
+        //         '& > :not(style)': {
+        //             m: 1,
+        //             width: 1300
+        //         },
+        //     }}
+        // >
+        <Box
+            sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                '& > *': {
+                    m: 1,
+                },
+            }}
+        >
+            <TextField
+                id="standard-search"
+                label="Search"
+                type="search"
+                variant="standard"
+                style={{ width: "80%" }}
+                onChange={handleSearch}
+            />
+            <ButtonGroup variant="outlined" aria-label="outlined button group" >
+                <Button>En Popüler Ürünler</Button>
+                <Button>En Düşük Fiyat</Button>
+                <Button>En Yüksek Fiyat</Button>
+            </ButtonGroup>
+            <Grid container spacing={2}>
+                {laptops.map(CreateCard)}
+            </Grid>
+        </Box>
+
     );
 }
 
