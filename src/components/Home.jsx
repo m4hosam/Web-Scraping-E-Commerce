@@ -37,27 +37,28 @@ function MediaCard() {
         console.log(event.target.value);
         const post = { searchKey: event.target.value }
 
-
         await axios.post("http://localhost:5000/search", post)
             .then((response) => {
                 setlaptop(response.data);
                 // console.log(response.data)
             });
     }
-    // console.log(props.laptops)
+    async function handlePriceToLow(event) {
+        await axios.get("http://localhost:5000/priceToLow")
+            .then((response) => {
+                setlaptop(response.data);
+                // console.log(response.data)
+            });
+    }
+    async function handlePriceToHigh(event) {
+
+        await axios.get("http://localhost:5000/priceToHigh")
+            .then((response) => {
+                setlaptop(response.data);
+                // console.log(response.data)
+            });
+    }
     return (
-        // <Box
-        //     sx={{
-        //         display: 'flex',
-        //         justifyContent: 'center',
-        //         flexDirection: 'column',
-        //         alignItems: 'center',
-        //         '& > :not(style)': {
-        //             m: 1,
-        //             width: 1300
-        //         },
-        //     }}
-        // >
         <Box
             sx={{
                 display: 'flex',
@@ -76,12 +77,12 @@ function MediaCard() {
                 style={{ width: "80%" }}
                 onChange={handleSearch}
             />
-            <ButtonGroup variant="outlined" aria-label="outlined button group" >
-                <Button>En Popüler Ürünler</Button>
-                <Button>En Düşük Fiyat</Button>
-                <Button>En Yüksek Fiyat</Button>
+            <ButtonGroup variant="outlined" aria-label="outlined button group" style={{ marginTop: '2rem' }}>
+                <Button onClick={handleSearch}>En Popüler Ürünler</Button>
+                <Button onClick={handlePriceToHigh}>En Düşük Fiyat</Button>
+                <Button onClick={handlePriceToLow}>En Yüksek Fiyat</Button>
             </ButtonGroup>
-            <Grid container spacing={2}>
+            <Grid container spacing={2} style={{ width: '90%', marginTop: '2rem' }}>
                 {laptops.map(CreateCard)}
             </Grid>
         </Box>

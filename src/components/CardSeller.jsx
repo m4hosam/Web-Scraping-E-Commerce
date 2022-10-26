@@ -11,7 +11,7 @@ function cardSeller(props) {
     // console.log(props)
     return (
         <div >
-            <Button href={props.productUrl} style={{ minWidth: "17rem", maxWidth: "17rem" }}>
+            <Button href={props.productUrl} style={{ minWidth: "15rem", maxWidth: "15rem" }}>
                 <Grid container  >
                     <Grid item xs={8}>
                         <span className="CardPrice">{props.seller}</span>

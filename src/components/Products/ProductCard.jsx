@@ -7,7 +7,7 @@ import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 
 function Cardfunc(props) {
-    console.log(props.sellers);
+    // console.log(props.sellers);
     return (
         <Card sx={{ maxWidth: 350, minHeight: 200 }} >
             <CardMedia
@@ -19,10 +19,10 @@ function Cardfunc(props) {
             />
             {/* mapping throw the sellers array from api */}
             <CardContent>
-                <Typography gutterBottom variant="h6" component="div">
+                <Typography gutterBottom variant="h7" component="div">
                     {props.name}
                 </Typography>
-                <Typography gutterBottom variant="h5" component="div" color={'#FF6D28'}>
+                <Typography gutterBottom variant="h6" component="div" color={'#EB1D36'}>
                     {props.price}
                 </Typography>
 

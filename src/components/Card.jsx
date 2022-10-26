@@ -22,7 +22,7 @@ function CreateSellers(sellerDetails) {
 function Cardfunc(props) {
     // console.log(props.sellers);
     return (
-        <Card sx={{ maxWidth: 365, minHeight: 400 }} >
+        <Card sx={{ maxWidth: 340, minHeight: 400 }} >
             <CardMedia
                 component="img"
                 height="140"

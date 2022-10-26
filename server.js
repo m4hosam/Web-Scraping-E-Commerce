@@ -1,13 +1,10 @@
 const { Laptop, Seller, Product } = require("./Database")
-const n11 = require('./n11')
-const trendyol = require('./trendyol')
-const teknosa = require('./teknosa')
-const hepsiburada = require('./hepsiburada')
+const { priceDecending, priceAscending, sellersPriceLowToHigh, sellersPriceHighToLow, scrapSites, sellersDynamicSearchArray, dynamicSearchArray } = require("./allFunctions")
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
 const cors = require("cors")
-
+const scrapeForLaptops = require('./scrapeLaptop.js')
 // important to make bodyParser work effieciently
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json())
@@ -17,53 +14,8 @@ app.get('/favicon.ico', (req, res) => {
     return '404'
 })
 
-function compare(a, b) {
-    let price1 = a.price.replace('TL', '')
-    price1 = parseFloat(price1)
-    let price2 = b.price.replace('TL', '')
-    price2 = parseFloat(price2)
-    if (price1 < price2) {
-        return -1;
-    }
-    if (price2 < price1) {
-        return 1;
-    }
-    return 0;
-}
-
-
-// scraping part
-async function scrapSites() {
-    // limit n11 to one page scraping
-    await n11(7);
-    await trendyol();
-    await hepsiburada();
-    await teknosa()
-}
 
 // scrapSites();
-
-
-function dynamicSearchArray(arr, word) {
-    word = word.toLowerCase().replaceAll(' ', '')
-    function data(item) {
-        let name = item.name.toLowerCase().replaceAll(' ', '')
-        let model = item.modelNo.toLowerCase().replaceAll(' ', '')
-        if (name.includes(word)) {
-            return true;
-        }
-        else if (model.includes(word)) {
-            return true;
-        }
-        else if (item.sellers?.find(o => o.seller.includes(word) === true)) {
-            return true;
-        }
-    }
-
-    const items = arr.filter(data);
-    return items;
-}
-
 
 
 //--------------------
@@ -87,49 +39,10 @@ const newProduct2 = {
 
 //-------------------
 
+// Home Routes
 
 
 
-app.get('/', cors(), async function (req, res) {
-
-    Laptop.find({}).populate('sellers').exec(async function (err, docs) {
-        if (err) {
-            console.log(err);
-        }
-        else {
-            if (docs) {
-                for (let doc of docs) {
-                    doc.sellers?.sort(compare)
-                    // console.log(doc)
-                }
-            }
-            res.send(docs);
-
-        }
-    })
-})
-
-app.post('/search', cors(), async function (req, res) {
-    const search = req.body.searchKey;
-    // console.log("searchKey: " + search)
-
-    Laptop.find({}).populate('sellers').exec(async function (err, docs) {
-        if (err) {
-            console.log(err);
-        }
-        else {
-            docs = dynamicSearchArray(docs, search)
-            for (let doc of docs) {
-                doc.sellers?.sort(compare)
-                // console.log(doc)
-            }
-            // console.log(docs)
-            res.send(docs);
-
-
-        }
-    })
-})
 
 app.get('/products', cors(), async function (req, res) {
     // await newProduct.save();
@@ -138,6 +51,51 @@ app.get('/products', cors(), async function (req, res) {
             console.log(err);
         }
         else {
+            res.send(docs);
+        }
+    })
+})
+
+app.post('/products/search', cors(), async function (req, res) {
+    const search = req.body.searchKey;
+    console.log("searchKey: " + search)
+    Product.find({}).exec(async function (err, docs) {
+        if (err) {
+            console.log(err);
+        }
+        else {
+            docs = dynamicSearchArray(docs, search)
+
+            console.log(docs)
+            res.send(docs);
+
+
+        }
+    })
+})
+
+app.get('/products/priceToLow', cors(), async function (req, res) {
+    Product.find({}).exec(async function (err, docs) {
+        if (err) {
+            console.log(err);
+        }
+        else {
+
+            docs.sort(priceDecending)
+            // console.log(docs)
+            res.send(docs);
+        }
+    })
+})
+
+app.get('/products/priceToHigh', cors(), async function (req, res) {
+    Product.find({}).exec(async function (err, docs) {
+        if (err) {
+            console.log(err);
+        }
+        else {
+            docs.sort(priceAscending)
+            // console.log(docs)
             res.send(docs);
         }
     })
@@ -165,11 +123,10 @@ app.post('/adminSearch', async function (req, res) {
     // Else : Scrap the websites for this key
     // Send the first match object
     // Hit the publish route
-    console.log("THe key: ")
-    console.log(key);
+    console.log("THe key: " + key)
+    const p = await scrapeForLaptops(key)
 
-
-    res.send(newProduct2);
+    res.send(p);
 })
 
 app.post('/publish', async function (req, res) {
@@ -181,6 +138,7 @@ app.post('/publish', async function (req, res) {
     console.log(product);
 })
 
+// not working yet
 app.post('/update', async function (req, res) {
     const key = req.body;
     // Update route gets hit in the updating product section 
@@ -188,7 +146,80 @@ app.post('/update', async function (req, res) {
     console.log(key);
 })
 
+app.get('/', cors(), async function (req, res) {
 
+    Laptop.find({}).populate('sellers').exec(async function (err, docs) {
+        if (err) {
+            console.log(err);
+        }
+        else {
+            if (docs) {
+                for (let doc of docs) {
+                    doc.sellers?.sort(priceDecending)
+                    // console.log(doc)
+                }
+            }
+            res.send(docs);
+
+        }
+    })
+})
+
+app.post('/search', cors(), async function (req, res) {
+    const search = req.body.searchKey;
+    // console.log("searchKey: " + search)
+
+    Laptop.find({}).populate('sellers').exec(async function (err, docs) {
+        if (err) {
+            console.log(err);
+        }
+        else {
+            docs = sellersDynamicSearchArray(docs, search)
+            for (let doc of docs) {
+                doc.sellers?.sort(priceDecending)
+                // console.log(doc)
+            }
+            // console.log(docs)
+            res.send(docs);
+
+
+        }
+    })
+})
+
+app.get('/priceToLow', cors(), async function (req, res) {
+    Laptop.find({}).populate('sellers').exec(async function (err, docs) {
+        if (err) {
+            console.log(err);
+        }
+        else {
+            for (let doc of docs) {
+                doc.sellers?.sort(priceDecending)
+                // console.log(doc)
+            }
+            docs.sort(sellersPriceHighToLow)
+            // console.log(docs)
+            res.send(docs);
+        }
+    })
+})
+
+app.get('/priceToHigh', cors(), async function (req, res) {
+    Laptop.find({}).populate('sellers').exec(async function (err, docs) {
+        if (err) {
+            console.log(err);
+        }
+        else {
+            for (let doc of docs) {
+                doc.sellers?.sort(priceDecending)
+                // console.log(doc)
+            }
+            docs.sort(sellersPriceLowToHigh)
+            // console.log(docs)
+            res.send(docs);
+        }
+    })
+})
 
 app.get('/:id', function (req, res) {
     Laptop.findOne({ _id: req.params.id }).populate('sellers').exec(async function (err, docs) {
@@ -197,7 +228,7 @@ app.get('/:id', function (req, res) {
 
         }
         else {
-            docs.sellers?.sort(compare)
+            docs.sellers?.sort(priceDecending)
             console.log(docs)
 
             res.send(docs);

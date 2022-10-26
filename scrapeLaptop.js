@@ -1,31 +1,22 @@
 const puppeteer = require('puppeteer');
-const mongoose = require('mongoose')
-const { Product } = require("./Database")
 
-mongoose.connect("mongodb://localhost:27017/test", { useNewUrlParser: true, useUnifiedTopology: true })
-    .then(() => {
-        console.log('Connected')
-    })
-    .catch(er => {
-        console.log('connection Error')
-    })
 
-async function scrapeN11(modelNo){
+async function scrapeN11(modelNo) {
     const browser = await puppeteer.launch()
     const page = await browser.newPage()
-    await page.goto(`https://www.n11.com/arama?q=${modelNo}`,{timeout: 0})
+    await page.goto(`https://www.n11.com/arama?q=${modelNo}`, { timeout: 0 })
     //console.log(`https://www.n11.com/arama?q=${modelNo}`)
-    
+
     const laptopArray = await page.evaluate(() => {
-        return Array.from(document.querySelectorAll(".pro a")).map(el=>el.href)
-        
+        return Array.from(document.querySelectorAll(".pro a")).map(el => el.href)
+
     })
 
     let matchLaptop;
 
     for (let i = 0; i < 5; i++) {
         console.log(laptopArray[i])
-        if(laptopArray[i].toUpperCase().includes(modelNo/*?.replace(/-/g,'').replace(/./g,'')*/)){
+        if (laptopArray[i].toUpperCase().includes(modelNo/*?.replace(/-/g,'').replace(/./g,'')*/)) {
             matchLaptop = laptopArray[i]
             break
         }
@@ -33,7 +24,7 @@ async function scrapeN11(modelNo){
 
     browser.close()
 
-    if(matchLaptop){
+    if (matchLaptop) {
         const laptop = await scrapeN11Laptop(matchLaptop, modelNo)
         //console.log("1")
         return new Promise((resolve, reject) => {
@@ -43,13 +34,13 @@ async function scrapeN11(modelNo){
 
     return "laptop not found"
 
-    
-} 
 
-async function scrapeN11Laptop(url, modelNo){
+}
+
+async function scrapeN11Laptop(url, modelNo) {
     const browser = await puppeteer.launch()
     const page = await browser.newPage()
-    await page.goto(url,{timeout: 0})
+    await page.goto(url, { timeout: 0 })
 
     const laptop = await page.evaluate(() => {
         const attributeNames = Array.from(document.querySelectorAll(".unf-prop-list-item p:nth-child(1)")).map(el => el.textContent)
@@ -72,7 +63,7 @@ async function scrapeN11Laptop(url, modelNo){
             diskSize: attributes["Disk Kapasitesi"],
             diskType: attributes["Disk Türü"],
             screenSize: attributes["Ekran Boyutu"],
-            price: parseFloat(document.querySelector(".newPrice ins").textContent.split(' ')[0].replace(/\./g,'').replace(',','.')),
+            price: parseFloat(document.querySelector(".newPrice ins").textContent.split(' ')[0].replace(/\./g, '').replace(',', '.')),
             score: document.querySelector(".ratingScore").textContent
         }
         return newObj
@@ -86,11 +77,11 @@ async function scrapeN11Laptop(url, modelNo){
     })
 }
 
-async function scrapeTrendyol(modelNo){
+async function scrapeTrendyol(modelNo) {
     const browser = await puppeteer.launch()
     const page = await browser.newPage()
-    await page.goto(`https://www.trendyol.com/sr?q=${modelNo}`,{timeout: 0})
-    
+    await page.goto(`https://www.trendyol.com/sr?q=${modelNo}`, { timeout: 0 })
+
     const laptopArray = await page.evaluate(() => {
         return Array.from(document.querySelectorAll(".p-card-chldrn-cntnr.card-border")).map(el => el.firstChild.href)
     })
@@ -99,7 +90,7 @@ async function scrapeTrendyol(modelNo){
 
     for (let i = 0; i < 5; i++) {
         //console.log(laptopArray[i])
-        if(laptopArray[i].toUpperCase().includes(modelNo/*.replace(/-/g,'').replace(/./g,'')*/)){
+        if (laptopArray[i].toUpperCase().includes(modelNo/*.replace(/-/g,'').replace(/./g,'')*/)) {
             matchLaptop = laptopArray[i]
             break
         }
@@ -108,7 +99,7 @@ async function scrapeTrendyol(modelNo){
 
     browser.close()
 
-    if(matchLaptop){
+    if (matchLaptop) {
         const laptop = await scrapeTrendyolLaptop(matchLaptop, modelNo)
 
         return new Promise((resolve, reject) => {
@@ -117,16 +108,16 @@ async function scrapeTrendyol(modelNo){
     }
 
     return "laptop not found"
-    
-} 
 
-async function scrapeTrendyolLaptop(url, modelNo){
+}
+
+async function scrapeTrendyolLaptop(url, modelNo) {
     const browser = await puppeteer.launch()
     const page = await browser.newPage()
-    await page.goto(url,{timeout: 0})
+    await page.goto(url, { timeout: 0 })
 
     const laptop = await page.evaluate(() => {
-    
+
         const attributeNames = Array.from(document.querySelectorAll(".detail-attr-item span:nth-child(1)")).map(el => el.textContent)
         const attributeValues = Array.from(document.querySelectorAll(".detail-attr-item span b")).map(el => el.textContent)
         let attributes = {}
@@ -144,7 +135,7 @@ async function scrapeTrendyolLaptop(url, modelNo){
             ram: attributes["Ram (Sistem Belleği)"],
             diskSize: attributes["SSD Kapasitesi"],
             screenSize: attributes["Ekran Boyutu"],
-            price: parseFloat(document.querySelector(".prc-dsc").textContent.split(' ')[0].replace(/\./g,'').replace(',','.')),
+            price: parseFloat(document.querySelector(".prc-dsc").textContent.split(' ')[0].replace(/\./g, '').replace(',', '.')),
             score: document.querySelector(".tltp-avg-cnt").textContent.trim()
         }
         //console.log(newObj)
@@ -153,38 +144,38 @@ async function scrapeTrendyolLaptop(url, modelNo){
     laptop["modelNo"] = modelNo
 
     browser.close()
-    
+
     return new Promise((resolve, reject) => {
         resolve(laptop)
     })
 }
 
-async function scrapeHepsiburada(modelNo){
+async function scrapeHepsiburada(modelNo) {
     const browser = await puppeteer.launch({
         ignoreHTTPSErrors: true,
         headless: false
     })
     const page = await browser.newPage()
-    await page.goto(`https://www.hepsiburada.com/ara?q=${modelNo}`,{timeout: 0})
-    
+    await page.goto(`https://www.hepsiburada.com/ara?q=${modelNo}`, { timeout: 0 })
+
     const laptopArray = await page.evaluate(() => {
-        return Array.from(document.querySelectorAll(".moria-ProductCard-joawUM")).map(el=>el.firstChild.href)
-        
+        return Array.from(document.querySelectorAll(".moria-ProductCard-joawUM")).map(el => el.firstChild.href)
+
     })
 
     let matchLaptop;
 
     for (let i = 0; i < 5; i++) {
         //console.log(laptopArray[i])
-        if(laptopArray[i].toUpperCase().includes(modelNo/*.replace(/-/g,'').replace(/./g,'')*/)){
+        if (laptopArray[i].toUpperCase().includes(modelNo/*.replace(/-/g,'').replace(/./g,'')*/)) {
             matchLaptop = laptopArray[i]
             break
         }
     }
-    
+
     browser.close()
 
-    if(matchLaptop){
+    if (matchLaptop) {
         const laptop = await scrapeHepsiburadaLaptop(matchLaptop, modelNo)
 
         return new Promise((resolve, reject) => {
@@ -192,11 +183,11 @@ async function scrapeHepsiburada(modelNo){
         })
 
     }
-    
-    return "laptop not found"
-} 
 
-async function scrapeHepsiburadaLaptop(url, modelNo){
+    return "laptop not found"
+}
+
+async function scrapeHepsiburadaLaptop(url, modelNo) {
     const browser = await puppeteer.launch({
         ignoreHTTPSErrors: true,
         headless: false
@@ -205,7 +196,7 @@ async function scrapeHepsiburadaLaptop(url, modelNo){
     await page.goto(url/*,{timeout: 0}*/)
 
     const laptop = await page.evaluate(() => {
-    
+
         const attributeNames = Array.from(document.querySelectorAll(".data-list.tech-spec th")).map(el => el.textContent)
         const attributeValues = Array.from(document.querySelectorAll(".data-list.tech-spec tr td :nth-child(1)")).map(el => el?.textContent.trim())
         let attributes = {}
@@ -214,17 +205,17 @@ async function scrapeHepsiburadaLaptop(url, modelNo){
         }
 
         const newObj = {
-            name: document.querySelector(".product-name").textContent.trim(),
-            imgUrl: document.querySelector("img.product-image").src,
-            brand: Array.from(document.querySelectorAll(".data-list.tech-spec td a"))[0].textContent,
+            name: document.querySelector(".product-name")?.textContent.trim(),
+            imgUrl: document.querySelector("img.product-image")?.src,
+            brand: Array.from(document.querySelectorAll(".data-list.tech-spec td a"))[0]?.textContent,
             ops: attributes["İşletim Sistemi"],
             cpuType: attributes["İşlemci Tipi"],
             cpuGen: attributes["İşlemci Nesli"],
             ram: attributes["Ram (Sistem Belleği)"],
             diskSize: attributes["SSD Kapasitesi"],
             screenSize: attributes["Ekran Boyutu"],
-            price: parseFloat(document.querySelector("[data-bind= \"markupText:'currentPriceBeforePoint'\"]").textContent.split(' ')[0].replace(/\./g,'').replace(',','.')),
-            score: document.querySelector(".rating-star").textContent.trim()
+            price: parseFloat(document.querySelector("[data-bind= \"markupText:'currentPriceBeforePoint'\"]")?.textContent.split(' ')[0].replace(/\./g, '').replace(',', '.')),
+            score: document.querySelector(".rating-star")?.textContent.trim()
         }
         return newObj
     })
@@ -235,33 +226,33 @@ async function scrapeHepsiburadaLaptop(url, modelNo){
     return new Promise((resolve, reject) => {
         resolve(laptop)
     })
-} 
+}
 
-async function scrapeTeknosa(modelNo){
+async function scrapeTeknosa(modelNo) {
     const browser = await puppeteer.launch()
     const page = await browser.newPage()
-    await page.goto(`https://www.teknosa.com/arama/?s=${modelNo}`,{timeout: 0})
+    await page.goto(`https://www.teknosa.com/arama/?s=${modelNo}`, { timeout: 0 })
 
     const laptopArray = await page.evaluate(() => {
         return Array.from(document.querySelectorAll(".prd-link")).map(el => el.href)
-        
+
     })
 
     let matchLaptop;
 
     for (let i = 0; i < 5; i++) {
         // console.log(laptopArray[i])
-        if(laptopArray[i].toUpperCase().includes(modelNo/*.replaceAll('-','').replaceAll('.',''))*/)){
+        if (laptopArray[i].toUpperCase().includes(modelNo/*.replaceAll('-','').replaceAll('.',''))*/)) {
             matchLaptop = laptopArray[i]
             break
         }
     }
-    
+
     //if(!matchLaptop) return "laptop not found"
     //console.log(matchLaptop)
     browser.close()
 
-    if(matchLaptop){
+    if (matchLaptop) {
         const laptop = await scrapeTeknosaLaptop(matchLaptop, modelNo)
 
         return new Promise((resolve, reject) => {
@@ -269,15 +260,15 @@ async function scrapeTeknosa(modelNo){
         })
     }
     return "laptop not found"
-} 
+}
 
-async function scrapeTeknosaLaptop(url, modelNo){
+async function scrapeTeknosaLaptop(url, modelNo) {
     const browser = await puppeteer.launch()
     const page = await browser.newPage()
-    await page.goto(url,{timeout: 0})
+    await page.goto(url, { timeout: 0 })
 
     const laptop = await page.evaluate(() => {
-    
+
         const attributeNames = Array.from(document.querySelectorAll(".ptf-body th")).map(el => el.textContent)
         const attributeValues = Array.from(document.querySelectorAll(".ptf-body td")).map(el => el.textContent)
         let attributes = {}
@@ -298,7 +289,7 @@ async function scrapeTeknosaLaptop(url, modelNo){
             diskSize: attributes["SSD Kapasitesi"],
             diskType: attributes["Disk Türü"],
             screenSize: attributes["Ekran Boyutu"],
-            price: parseFloat(document.querySelector(".prc.prc-last").textContent.split(' ')[0].replace(/\./g,'').replace(',','.'))
+            price: parseFloat(document.querySelector(".prc.prc-last").textContent.split(' ')[0].replace(/\./g, '').replace(',', '.'))
         }
         return newObj
     })
@@ -311,7 +302,7 @@ async function scrapeTeknosaLaptop(url, modelNo){
     })
 }
 
-async function scrapeForLaptops(modelNo){
+async function scrapeForLaptops(modelNo) {
 
 
     const n11 = await scrapeN11(modelNo)
@@ -329,7 +320,7 @@ async function scrapeForLaptops(modelNo){
     teknosa["cpuGen"] = trendyol["cpuGen"]
     n11["cpuGen"] = trendyol["cpuGen"]
     hepsiburada["cpuGen"] = trendyol["cpuGen"]
-    
+
     const arr = [n11, trendyol, hepsiburada, teknosa]
     let cheapest = n11
 
@@ -337,8 +328,8 @@ async function scrapeForLaptops(modelNo){
     // console.log(trendyol)
     // console.log(hepsiburada)
     // console.log(teknosa)
-    for(let i=0 ; i < arr.length; i++){
-        if(arr[i].price < cheapest.price) cheapest = arr[i]
+    for (let i = 0; i < arr.length; i++) {
+        if (arr[i].price < cheapest.price) cheapest = arr[i]
     }
     console.log("****************")
     console.log(cheapest)
@@ -352,5 +343,4 @@ async function scrapeForLaptops(modelNo){
 
 
 module.exports = scrapeForLaptops;
-
 
