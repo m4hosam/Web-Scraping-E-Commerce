@@ -14,7 +14,7 @@ async function scrapeN11(modelNo){
     const browser = await puppeteer.launch()
     const page = await browser.newPage()
     await page.goto(`https://www.n11.com/arama?q=${modelNo}`,{timeout: 0})
-    console.log(`https://www.n11.com/arama?q=${modelNo}`)
+    //console.log(`https://www.n11.com/arama?q=${modelNo}`)
     
     const laptopArray = await page.evaluate(() => {
         return Array.from(document.querySelectorAll(".pro a")).map(el=>el.href)
@@ -25,7 +25,7 @@ async function scrapeN11(modelNo){
 
     for (let i = 0; i < 5; i++) {
         console.log(laptopArray[i])
-        if(laptopArray[i].toUpperCase().includes(modelNo.replace(/-/g,'').replace(/./g,''))){
+        if(laptopArray[i].toUpperCase().includes(modelNo/*?.replace(/-/g,'').replace(/./g,'')*/)){
             matchLaptop = laptopArray[i]
             break
         }
@@ -33,11 +33,17 @@ async function scrapeN11(modelNo){
 
     browser.close()
 
-    const laptop = await scrapeN11Laptop(matchLaptop, modelNo)
-    console.log("1")
-    return new Promise((resolve, reject) => {
-        resolve(laptop)
-    })
+    if(matchLaptop){
+        const laptop = await scrapeN11Laptop(matchLaptop, modelNo)
+        //console.log("1")
+        return new Promise((resolve, reject) => {
+            resolve(laptop)
+        })
+    }
+
+    return "laptop not found"
+
+    
 } 
 
 async function scrapeN11Laptop(url, modelNo){
@@ -92,20 +98,26 @@ async function scrapeTrendyol(modelNo){
     let matchLaptop;
 
     for (let i = 0; i < 5; i++) {
-        console.log(laptopArray[i])
-        if(laptopArray[i].toUpperCase().includes(modelNo.replace(/-/g,'').replace(/./g,''))){
+        //console.log(laptopArray[i])
+        if(laptopArray[i].toUpperCase().includes(modelNo/*.replace(/-/g,'').replace(/./g,'')*/)){
             matchLaptop = laptopArray[i]
             break
         }
     }
 
+
     browser.close()
 
-    const laptop = await scrapeTrendyolLaptop(matchLaptop, modelNo)
+    if(matchLaptop){
+        const laptop = await scrapeTrendyolLaptop(matchLaptop, modelNo)
 
-    return new Promise((resolve, reject) => {
-        resolve(laptop)
-    })
+        return new Promise((resolve, reject) => {
+            resolve(laptop)
+        })
+    }
+
+    return "laptop not found"
+    
 } 
 
 async function scrapeTrendyolLaptop(url, modelNo){
@@ -141,7 +153,7 @@ async function scrapeTrendyolLaptop(url, modelNo){
     laptop["modelNo"] = modelNo
 
     browser.close()
-
+    
     return new Promise((resolve, reject) => {
         resolve(laptop)
     })
@@ -163,21 +175,25 @@ async function scrapeHepsiburada(modelNo){
     let matchLaptop;
 
     for (let i = 0; i < 5; i++) {
-        console.log(laptopArray[i])
-        if(laptopArray[i].toUpperCase().includes(modelNo.replace(/-/g,'').replace(/./g,''))){
+        //console.log(laptopArray[i])
+        if(laptopArray[i].toUpperCase().includes(modelNo/*.replace(/-/g,'').replace(/./g,'')*/)){
             matchLaptop = laptopArray[i]
             break
         }
     }
     
     browser.close()
-    const laptop = await scrapeHepsiburadaLaptop(matchLaptop, modelNo)
 
-    return new Promise((resolve, reject) => {
-        resolve(laptop)
-    })
+    if(matchLaptop){
+        const laptop = await scrapeHepsiburadaLaptop(matchLaptop, modelNo)
 
+        return new Promise((resolve, reject) => {
+            resolve(laptop)
+        })
+
+    }
     
+    return "laptop not found"
 } 
 
 async function scrapeHepsiburadaLaptop(url, modelNo){
@@ -186,11 +202,12 @@ async function scrapeHepsiburadaLaptop(url, modelNo){
         headless: false
     })
     const page = await browser.newPage()
-    await page.goto(url,{timeout: 0})
+    await page.goto(url/*,{timeout: 0}*/)
+
     const laptop = await page.evaluate(() => {
     
         const attributeNames = Array.from(document.querySelectorAll(".data-list.tech-spec th")).map(el => el.textContent)
-        const attributeValues = Array.from(document.querySelectorAll(".data-list.tech-spec tr td :nth-child(1)")).map(el => el.textContent.trim())
+        const attributeValues = Array.from(document.querySelectorAll(".data-list.tech-spec tr td :nth-child(1)")).map(el => el?.textContent.trim())
         let attributes = {}
         for (let i = 1; i < attributeNames.length; i++) {
             attributes[attributeNames[i]] = attributeValues[i]
@@ -234,14 +251,14 @@ async function scrapeTeknosa(modelNo){
 
     for (let i = 0; i < 5; i++) {
         // console.log(laptopArray[i])
-        if(laptopArray[i].toUpperCase().includes(modelNo.replace(/-/g,'').replace(/./g,''))){
+        if(laptopArray[i].toUpperCase().includes(modelNo/*.replaceAll('-','').replaceAll('.',''))*/)){
             matchLaptop = laptopArray[i]
             break
         }
     }
     
     //if(!matchLaptop) return "laptop not found"
-    console.log(matchLaptop)
+    //console.log(matchLaptop)
     browser.close()
 
     if(matchLaptop){
@@ -294,13 +311,17 @@ async function scrapeTeknosaLaptop(url, modelNo){
     })
 }
 
-async function srapeForLaptops(modelNo){
+async function scrapeForLaptops(modelNo){
 
 
     const n11 = await scrapeN11(modelNo)
+    console.log(n11)
     const trendyol = await scrapeTrendyol(modelNo)
+    console.log(trendyol)
     const hepsiburada = await scrapeHepsiburada(modelNo)
+    console.log(hepsiburada)
     const teknosa = await scrapeTeknosa(modelNo)
+    console.log(teknosa)
 
     hepsiburada["diskType"] = n11["diskType"]
     trendyol["diskType"] = n11["diskType"]
@@ -312,22 +333,24 @@ async function srapeForLaptops(modelNo){
     const arr = [n11, trendyol, hepsiburada, teknosa]
     let cheapest = n11
 
-    console.log(n11)
-    console.log(trendyol)
-    console.log(hepsiburada)
-    console.log(teknosa)
+    // console.log(n11)
+    // console.log(trendyol)
+    // console.log(hepsiburada)
+    // console.log(teknosa)
     for(let i=0 ; i < arr.length; i++){
         if(arr[i].price < cheapest.price) cheapest = arr[i]
     }
-
+    console.log("****************")
     console.log(cheapest)
-
+    return new Promise((resolve, reject) => {
+        resolve(cheapest)
+    })
 
 }
 
+//scrapeForLaptops("82H802F6TX")
 
 
-module.exports = srapeForLaptops();
+module.exports = scrapeForLaptops;
 
 
-//srapeForLaptops("82H802F7TX")
