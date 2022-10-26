@@ -25,19 +25,11 @@ async function scrapeN11(modelNo){
 
     for (let i = 0; i < 5; i++) {
         console.log(laptopArray[i])
-        if(laptopArray[i].toUpperCase().includes(modelNo)){
+        if(laptopArray[i].toUpperCase().includes(modelNo.replace(/-/g,'').replace(/./g,''))){
             matchLaptop = laptopArray[i]
             break
         }
     }
-    
-    // const  firstLaptopTitle = await page.evaluate(() => {
-    //     return document.querySelector(".productName").textContent
-    // })
-
-    // if(!firstLaptopTitle.toUpperCase().includes(modelNo.trim())){
-    //     return "laptop not found"
-    // }
 
     browser.close()
 
@@ -52,8 +44,8 @@ async function scrapeN11Laptop(url, modelNo){
     const browser = await puppeteer.launch()
     const page = await browser.newPage()
     await page.goto(url,{timeout: 0})
-    //console.log(modelNo)
-    const laptop = await page.evaluate((modelNo) => {
+
+    const laptop = await page.evaluate(() => {
         const attributeNames = Array.from(document.querySelectorAll(".unf-prop-list-item p:nth-child(1)")).map(el => el.textContent)
         const attributeValues = Array.from(document.querySelectorAll(".unf-prop-list-item p:nth-child(2)")).map(el => el.textContent)
         let attributes = {}
@@ -74,7 +66,8 @@ async function scrapeN11Laptop(url, modelNo){
             diskSize: attributes["Disk Kapasitesi"],
             diskType: attributes["Disk Türü"],
             screenSize: attributes["Ekran Boyutu"],
-            price: parseFloat(document.querySelector(".newPrice ins").textContent.split(' ')[0].replace(/\./g,'').replace(',','.'))
+            price: parseFloat(document.querySelector(".newPrice ins").textContent.split(' ')[0].replace(/\./g,'').replace(',','.')),
+            score: document.querySelector(".ratingScore").textContent
         }
         return newObj
     })
@@ -100,7 +93,7 @@ async function scrapeTrendyol(modelNo){
 
     for (let i = 0; i < 5; i++) {
         console.log(laptopArray[i])
-        if(laptopArray[i].toUpperCase().includes(modelNo)){
+        if(laptopArray[i].toUpperCase().includes(modelNo.replace(/-/g,'').replace(/./g,''))){
             matchLaptop = laptopArray[i]
             break
         }
@@ -133,15 +126,14 @@ async function scrapeTrendyolLaptop(url, modelNo){
             title: document.querySelector(".pr-new-br span").textContent,
             imgUrl: document.querySelector(".base-product-image img").src,
             brand: document.querySelector(".pr-new-br a").textContent,
-            //modelNo: modelNo,
             ops: attributes["İşletim Sistemi"],
             cpuType: attributes["İşlemci Tipi"],
             cpuGen: attributes["İşlemci Nesli"],
             ram: attributes["Ram (Sistem Belleği)"],
             diskSize: attributes["SSD Kapasitesi"],
-            //diskType: attributes["Disk Türü"],
             screenSize: attributes["Ekran Boyutu"],
-            price: parseFloat(document.querySelector(".prc-dsc").textContent.split(' ')[0].replace(/\./g,'').replace(',','.'))
+            price: parseFloat(document.querySelector(".prc-dsc").textContent.split(' ')[0].replace(/\./g,'').replace(',','.')),
+            score: document.querySelector(".tltp-avg-cnt").textContent.trim()
         }
         //console.log(newObj)
         return newObj
@@ -172,20 +164,12 @@ async function scrapeHepsiburada(modelNo){
 
     for (let i = 0; i < 5; i++) {
         console.log(laptopArray[i])
-        if(laptopArray[i].toUpperCase().includes(modelNo)){
+        if(laptopArray[i].toUpperCase().includes(modelNo.replace(/-/g,'').replace(/./g,''))){
             matchLaptop = laptopArray[i]
             break
         }
     }
     
-    // const  firstLaptopTitle = await page.evaluate(() => {
-    //     return document.querySelector(".moria-ProductCard-joawUM").firstChild.title
-    // })
-
-    // if(!firstLaptopTitle.toUpperCase().includes(modelNo.trim())){
-    //     return "laptop not found"
-    // }
-
     browser.close()
     const laptop = await scrapeHepsiburadaLaptop(matchLaptop, modelNo)
 
@@ -216,15 +200,14 @@ async function scrapeHepsiburadaLaptop(url, modelNo){
             name: document.querySelector(".product-name").textContent.trim(),
             imgUrl: document.querySelector("img.product-image").src,
             brand: Array.from(document.querySelectorAll(".data-list.tech-spec td a"))[0].textContent,
-            //modelNo: modelNo,
             ops: attributes["İşletim Sistemi"],
             cpuType: attributes["İşlemci Tipi"],
             cpuGen: attributes["İşlemci Nesli"],
             ram: attributes["Ram (Sistem Belleği)"],
             diskSize: attributes["SSD Kapasitesi"],
-            //diskType: attributes["Disk Türü"],
             screenSize: attributes["Ekran Boyutu"],
-            price: parseFloat(document.querySelector("[data-bind= \"markupText:'currentPriceBeforePoint'\"]").textContent.split(' ')[0].replace(/\./g,'').replace(',','.'))
+            price: parseFloat(document.querySelector("[data-bind= \"markupText:'currentPriceBeforePoint'\"]").textContent.split(' ')[0].replace(/\./g,'').replace(',','.')),
+            score: document.querySelector(".rating-star").textContent.trim()
         }
         return newObj
     })
@@ -251,7 +234,7 @@ async function scrapeTeknosa(modelNo){
 
     for (let i = 0; i < 5; i++) {
         // console.log(laptopArray[i])
-        if(laptopArray[i].toUpperCase().includes(modelNo)){
+        if(laptopArray[i].toUpperCase().includes(modelNo.replace(/-/g,'').replace(/./g,''))){
             matchLaptop = laptopArray[i]
             break
         }
@@ -261,11 +244,14 @@ async function scrapeTeknosa(modelNo){
     console.log(matchLaptop)
     browser.close()
 
-    const laptop = await scrapeTeknosaLaptop(matchLaptop, modelNo)
+    if(matchLaptop){
+        const laptop = await scrapeTeknosaLaptop(matchLaptop, modelNo)
 
-    return new Promise((resolve, reject) => {
-        resolve(laptop)
-    })
+        return new Promise((resolve, reject) => {
+            resolve(laptop)
+        })
+    }
+    return "laptop not found"
 } 
 
 async function scrapeTeknosaLaptop(url, modelNo){
@@ -290,7 +276,7 @@ async function scrapeTeknosaLaptop(url, modelNo){
             //modelNo: modelNo,
             ops: attributes["İşletim Sistemi Yazılımı"],
             cpuType: attributes["İşlemci"],
-            cpuGen: attributes["İşlemci Nesli"],
+            //cpuGen: attributes["İşlemci Nesli"],
             ram: attributes["Ram"],
             diskSize: attributes["SSD Kapasitesi"],
             diskType: attributes["Disk Türü"],
@@ -308,24 +294,28 @@ async function scrapeTeknosaLaptop(url, modelNo){
     })
 }
 
-async function comparePrices(modelNo){
+async function srapeForLaptops(modelNo){
 
 
-    //const n11 = await scrapeN11(modelNo)
-    //Product.insert(n11)
-    //console.log(n11)
-    //const trendyol = await scrapeTrendyol(modelNo)
-    //console.log(trendyol)
-    //const hepsiburada = await scrapeHepsiburada(modelNo)
-    ///console.log(hepsiburada)
+    const n11 = await scrapeN11(modelNo)
+    const trendyol = await scrapeTrendyol(modelNo)
+    const hepsiburada = await scrapeHepsiburada(modelNo)
     const teknosa = await scrapeTeknosa(modelNo)
-    console.log(teknosa)
-    
-    
+
+    hepsiburada["diskType"] = n11["diskType"]
+    trendyol["diskType"] = n11["diskType"]
+
+    teknosa["cpuGen"] = trendyol["cpuGen"]
+    n11["cpuGen"] = trendyol["cpuGen"]
+    hepsiburada["cpuGen"] = trendyol["cpuGen"]
     
     const arr = [n11, trendyol, hepsiburada, teknosa]
     let cheapest = n11
 
+    console.log(n11)
+    console.log(trendyol)
+    console.log(hepsiburada)
+    console.log(teknosa)
     for(let i=0 ; i < arr.length; i++){
         if(arr[i].price < cheapest.price) cheapest = arr[i]
     }
@@ -333,13 +323,11 @@ async function comparePrices(modelNo){
     console.log(cheapest)
 
 
-    // const product = new Product(cheapest)
-
-    // await product.save()
-
-    //saves cheapest to database
 }
 
 
 
-comparePrices("82K100CLTX99")
+module.exports = srapeForLaptops();
+
+
+//srapeForLaptops("82H802F7TX")
