@@ -16,22 +16,32 @@ async function scrapeN11(modelNo){
     await page.goto(`https://www.n11.com/arama?q=${modelNo}`,{timeout: 0})
     console.log(`https://www.n11.com/arama?q=${modelNo}`)
     
-    const firstLaptopUrl = await page.evaluate(() => {
-        return document.querySelector(".pro a").href
+    const laptopArray = await page.evaluate(() => {
+        return Array.from(document.querySelectorAll(".pro a")).map(el=>el.href)
         
     })
-    
-    const  firstLaptopTitle = await page.evaluate(() => {
-        return document.querySelector(".productName").textContent
-    })
 
-    if(!firstLaptopTitle.toUpperCase().includes(modelNo.trim())){
-        return "laptop not found"
+    let matchLaptop;
+
+    for (let i = 0; i < 5; i++) {
+        console.log(laptopArray[i])
+        if(laptopArray[i].toUpperCase().includes(modelNo)){
+            matchLaptop = laptopArray[i]
+            break
+        }
     }
+    
+    // const  firstLaptopTitle = await page.evaluate(() => {
+    //     return document.querySelector(".productName").textContent
+    // })
+
+    // if(!firstLaptopTitle.toUpperCase().includes(modelNo.trim())){
+    //     return "laptop not found"
+    // }
 
     browser.close()
 
-    const laptop = await scrapeN11Laptop(firstLaptopUrl, modelNo)
+    const laptop = await scrapeN11Laptop(matchLaptop, modelNo)
     console.log("1")
     return new Promise((resolve, reject) => {
         resolve(laptop)
@@ -82,23 +92,23 @@ async function scrapeTrendyol(modelNo){
     const page = await browser.newPage()
     await page.goto(`https://www.trendyol.com/sr?q=${modelNo}`,{timeout: 0})
     
-    const firstLaptopUrl = await page.evaluate(() => {
-        return document.querySelector(".p-card-chldrn-cntnr.card-border").firstChild.href
-        
-    })
-    
-    const firstLaptopTitle = await page.evaluate(() => {
-        return document.querySelector(".p-card-chldrn-cntnr.card-border").firstChild.getElementsByClassName("prdct-desc-cntnr-name")[0].textContent
-        
+    const laptopArray = await page.evaluate(() => {
+        return Array.from(document.querySelectorAll(".p-card-chldrn-cntnr.card-border")).map(el => el.firstChild.href)
     })
 
-    if(!firstLaptopTitle.toUpperCase().includes(modelNo.trim())){
-        return "laptop not found"
+    let matchLaptop;
+
+    for (let i = 0; i < 5; i++) {
+        console.log(laptopArray[i])
+        if(laptopArray[i].toUpperCase().includes(modelNo)){
+            matchLaptop = laptopArray[i]
+            break
+        }
     }
 
     browser.close()
 
-    const laptop = await scrapeTrendyolLaptop(firstLaptopUrl, modelNo)
+    const laptop = await scrapeTrendyolLaptop(matchLaptop, modelNo)
 
     return new Promise((resolve, reject) => {
         resolve(laptop)
@@ -153,21 +163,31 @@ async function scrapeHepsiburada(modelNo){
     const page = await browser.newPage()
     await page.goto(`https://www.hepsiburada.com/ara?q=${modelNo}`,{timeout: 0})
     
-    const firstLaptopUrl = await page.evaluate(() => {
-        return document.querySelector(".moria-ProductCard-joawUM").firstChild.href
+    const laptopArray = await page.evaluate(() => {
+        return Array.from(document.querySelectorAll(".moria-ProductCard-joawUM")).map(el=>el.firstChild.href)
         
     })
-    
-    const  firstLaptopTitle = await page.evaluate(() => {
-        return document.querySelector(".moria-ProductCard-joawUM").firstChild.title
-    })
 
-    if(!firstLaptopTitle.toUpperCase().includes(modelNo.trim())){
-        return "laptop not found"
+    let matchLaptop;
+
+    for (let i = 0; i < 5; i++) {
+        console.log(laptopArray[i])
+        if(laptopArray[i].toUpperCase().includes(modelNo)){
+            matchLaptop = laptopArray[i]
+            break
+        }
     }
+    
+    // const  firstLaptopTitle = await page.evaluate(() => {
+    //     return document.querySelector(".moria-ProductCard-joawUM").firstChild.title
+    // })
+
+    // if(!firstLaptopTitle.toUpperCase().includes(modelNo.trim())){
+    //     return "laptop not found"
+    // }
 
     browser.close()
-    const laptop = await scrapeHepsiburadaLaptop(firstLaptopUrl, modelNo)
+    const laptop = await scrapeHepsiburadaLaptop(matchLaptop, modelNo)
 
     return new Promise((resolve, reject) => {
         resolve(laptop)
@@ -222,22 +242,26 @@ async function scrapeTeknosa(modelNo){
     const page = await browser.newPage()
     await page.goto(`https://www.teknosa.com/arama/?s=${modelNo}`,{timeout: 0})
 
-    const firstLaptopUrl = await page.evaluate(() => {
-        return document.querySelector(".prd-link").href
+    const laptopArray = await page.evaluate(() => {
+        return Array.from(document.querySelectorAll(".prd-link")).map(el => el.href)
         
     })
-    
-    const firstLaptopTitle = await page.evaluate(() => {
-        return firstLaptopTitle= document.querySelector(".prd").querySelector("h3.prd-title").textContent.trim()
-    })
 
-    if(!firstLaptopTitle.toUpperCase().includes(modelNo.trim())){
-        return "laptop not found"
+    let matchLaptop;
+
+    for (let i = 0; i < 5; i++) {
+        // console.log(laptopArray[i])
+        if(laptopArray[i].toUpperCase().includes(modelNo)){
+            matchLaptop = laptopArray[i]
+            break
+        }
     }
-
+    
+    //if(!matchLaptop) return "laptop not found"
+    console.log(matchLaptop)
     browser.close()
 
-    const laptop = await scrapeTeknosaLaptop(firstLaptopUrl, modelNo)
+    const laptop = await scrapeTeknosaLaptop(matchLaptop, modelNo)
 
     return new Promise((resolve, reject) => {
         resolve(laptop)
@@ -261,9 +285,9 @@ async function scrapeTeknosaLaptop(url, modelNo){
         //document.querySelector(".prd").querySelector("h3.prd-title").textConten
         const newObj = {
             name: document.querySelector("h2.name").textContent,
-            imgUrl: document.querySelector("img.entered.loaded.lazy-loaded").src,
+            //imgUrl: document.querySelector("img.entered.loaded.lazy-loaded").src,
             brand: document.querySelector("h2.name").textContent.split(' ')[0],
-            modelNo: modelNo,
+            //modelNo: modelNo,
             ops: attributes["İşletim Sistemi Yazılımı"],
             cpuType: attributes["İşlemci"],
             cpuGen: attributes["İşlemci Nesli"],
@@ -285,13 +309,15 @@ async function scrapeTeknosaLaptop(url, modelNo){
 }
 
 async function comparePrices(modelNo){
-    const n11 = await scrapeN11(modelNo)
+
+
+    //const n11 = await scrapeN11(modelNo)
     //Product.insert(n11)
-    console.log(n11)
-    const trendyol = await scrapeTrendyol(modelNo)
-    console.log(trendyol)
-    const hepsiburada = await scrapeHepsiburada(modelNo)
-    console.log(hepsiburada)
+    //console.log(n11)
+    //const trendyol = await scrapeTrendyol(modelNo)
+    //console.log(trendyol)
+    //const hepsiburada = await scrapeHepsiburada(modelNo)
+    ///console.log(hepsiburada)
     const teknosa = await scrapeTeknosa(modelNo)
     console.log(teknosa)
     
@@ -306,11 +332,14 @@ async function comparePrices(modelNo){
 
     console.log(cheapest)
 
-    const product = new Product(cheapest)
 
-    await product.save()
+    // const product = new Product(cheapest)
+
+    // await product.save()
 
     //saves cheapest to database
 }
 
-comparePrices("82H802F7TX")
+
+
+comparePrices("82K100CLTX99")
