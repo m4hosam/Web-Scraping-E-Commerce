@@ -15,7 +15,7 @@ app.get('/favicon.ico', (req, res) => {
 })
 
 
-// scrapSites();
+scrapSites();
 
 
 //--------------------
@@ -102,7 +102,7 @@ app.get('/products/priceToHigh', cors(), async function (req, res) {
 })
 
 app.get('/products/:id', cors(), async function (req, res) {
-
+    console.log("Hit")
     Product.findOne({ _id: req.params.id }, async function (err, docs) {
         if (err) {
             console.log("Error id params" + err);
@@ -118,15 +118,31 @@ app.get('/products/:id', cors(), async function (req, res) {
 
 app.post('/adminSearch', async function (req, res) {
     const key = req.body.searchKey;
+    console.log("THe key: " + key)
     // First search in the DB if there -> Get -> Update
     // We can Make an Update route
+    Product.find({}).exec(async function (err, docs) {
+        if (err) {
+            console.log(err);
+        }
+        else {
+            docs = dynamicSearchArray(docs, key)
+            if (docs.length !== 0) {
+                console.log(docs)
+                res.send(docs[0]);
+            }
+            else {
+                const p = await scrapeForLaptops(key)
+                res.send(p);
+            }
+            // console.log(docs)
+        }
+    })
     // Else : Scrap the websites for this key
     // Send the first match object
     // Hit the publish route
-    console.log("THe key: " + key)
-    const p = await scrapeForLaptops(key)
 
-    res.send(p);
+
 })
 
 app.post('/publish', async function (req, res) {
@@ -135,7 +151,8 @@ app.post('/publish', async function (req, res) {
     // Publish route gets hit in the scraping section 
     const newProduct = new Product(product)
     await newProduct.save()
-    console.log(product);
+    // console.log(product);
+    res.send("Done")
 })
 
 // not working yet

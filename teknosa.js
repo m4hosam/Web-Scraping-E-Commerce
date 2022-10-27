@@ -44,7 +44,7 @@ async function scrapePage(url, modelNo) {
     })
 
     //console.log(bestLaptop)
-    if (bestLaptop?.title.toUpperCase().includes(modelNo.trim())) {
+    if (bestLaptop?.title?.toUpperCase().includes(modelNo.trim())) {
         const seller = new Seller({
             productUrl: bestLaptop.url,
             price: bestLaptop.price,

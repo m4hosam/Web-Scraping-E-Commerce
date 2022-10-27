@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Footer from './EditFooter'
 import Header from './EditHeader'
@@ -8,9 +8,31 @@ import Button from '@mui/material/Button';
 
 
 
-function EditDetails() {
+function EditDetails(props) {
     const navigate = useNavigate();
+    // let laptop = {}
+
     const laptop = useLocation().state;
+    // const [laptop2, setlaptop2] = useState([]);
+
+    // console.log("Hit")
+    // useEffect(() => {
+    //     if (props.id) {
+    //         axios.get(`http://localhost:5000/products/${props.id}`).then((response) => {
+    //             setlaptop2(response.data);
+    //             console.log(response.data)
+    //         });
+    //     }
+    // }, []);
+
+    // console.log("laptop1")
+    // console.log(laptop1)
+    // console.log("laptop2")
+    // console.log(laptop2)
+    // laptop = laptop1 === null ? laptop2 : laptop1
+
+
+
 
     const [brand, setbrand] = useState(laptop.brand);
     const [name, setname] = useState(laptop.name);
@@ -36,9 +58,6 @@ function EditDetails() {
         },
         (childdata) => {
             setPrice(childdata);
-        },
-        (childdata) => {
-            setmodel(childdata);
         },
         (childdata) => {
             setmodelNo(childdata);
@@ -86,9 +105,17 @@ function EditDetails() {
         };
         // console.log("post----------");
         // console.log(post);
-        await axios.post("http://localhost:5000/publish", post);
+        await axios.post("http://localhost:5000/publish", post).then((response) => {
+            // console.log(response.data)
+            // console.log("----------------------------\n");
+            // navigate("/editLaptop", { state: response.data });
+            // console.log("Done axios")
+            navigate("/products");
+        });
 
-        navigate("/products");
+        // console.log("Done axios")
+        // navigate("/products");
+
 
     }
 

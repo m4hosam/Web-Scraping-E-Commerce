@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-mongoose.connect("mongodb://localhost:27017/webScraping", { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect("mongodb+srv://m4hosam:m4h3429@cluster0.xwjhyxa.mongodb.net/webScraping", { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => {
         console.log('Conneccted to the DB')
     })

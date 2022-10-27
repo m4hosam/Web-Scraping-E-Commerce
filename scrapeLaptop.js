@@ -8,7 +8,7 @@ async function scrapeN11(modelNo) {
     //console.log(`https://www.n11.com/arama?q=${modelNo}`)
 
     const laptopArray = await page.evaluate(() => {
-        return Array.from(document.querySelectorAll(".pro a")).map(el => el.href)
+        return Array.from(document.querySelectorAll(".pro a")).map(el => el?.href)
 
     })
 
@@ -16,7 +16,7 @@ async function scrapeN11(modelNo) {
 
     for (let i = 0; i < 5; i++) {
         console.log(laptopArray[i])
-        if (laptopArray[i].toUpperCase().includes(modelNo/*?.replace(/-/g,'').replace(/./g,'')*/)) {
+        if (laptopArray[i].toUpperCase().includes(modelNo?.replace(/-/g, '').replace(/./g, ''))) {
             matchLaptop = laptopArray[i]
             break
         }
@@ -43,8 +43,8 @@ async function scrapeN11Laptop(url, modelNo) {
     await page.goto(url, { timeout: 0 })
 
     const laptop = await page.evaluate(() => {
-        const attributeNames = Array.from(document.querySelectorAll(".unf-prop-list-item p:nth-child(1)")).map(el => el.textContent)
-        const attributeValues = Array.from(document.querySelectorAll(".unf-prop-list-item p:nth-child(2)")).map(el => el.textContent)
+        const attributeNames = Array.from(document.querySelectorAll(".unf-prop-list-item p:nth-child(1)")).map(el => el?.textContent)
+        const attributeValues = Array.from(document.querySelectorAll(".unf-prop-list-item p:nth-child(2)")).map(el => el?.textContent)
         let attributes = {}
 
         for (let i = 0; i < attributeNames.length; i++) {
@@ -52,8 +52,8 @@ async function scrapeN11Laptop(url, modelNo) {
         }
 
         const newObj = {
-            name: document.querySelector("h1.proName").textContent.trim(),
-            imgUrl: document.querySelector(".imgObj img").src,
+            name: document.querySelector("h1.proName")?.textContent.trim(),
+            imgUrl: document.querySelector(".imgObj img")?.src,
             brand: attributes["Marka"],
             //modelNo: modelNo,
             ops: attributes["İşletim Sistemi"],
@@ -63,8 +63,8 @@ async function scrapeN11Laptop(url, modelNo) {
             diskSize: attributes["Disk Kapasitesi"],
             diskType: attributes["Disk Türü"],
             screenSize: attributes["Ekran Boyutu"],
-            price: parseFloat(document.querySelector(".newPrice ins").textContent.split(' ')[0].replace(/\./g, '').replace(',', '.')),
-            score: document.querySelector(".ratingScore").textContent
+            price: parseFloat(document.querySelector(".newPrice ins")?.textContent.split(' ')[0].replace(/\./g, '').replace(',', '.')),
+            score: document.querySelector(".ratingScore")?.textContent
         }
         return newObj
     })
@@ -83,14 +83,14 @@ async function scrapeTrendyol(modelNo) {
     await page.goto(`https://www.trendyol.com/sr?q=${modelNo}`, { timeout: 0 })
 
     const laptopArray = await page.evaluate(() => {
-        return Array.from(document.querySelectorAll(".p-card-chldrn-cntnr.card-border")).map(el => el.firstChild.href)
+        return Array.from(document.querySelectorAll(".p-card-chldrn-cntnr.card-border")).map(el => el?.firstChild?.href)
     })
 
     let matchLaptop;
 
     for (let i = 0; i < 5; i++) {
         //console.log(laptopArray[i])
-        if (laptopArray[i].toUpperCase().includes(modelNo/*.replace(/-/g,'').replace(/./g,'')*/)) {
+        if (laptopArray[i]?.toUpperCase().includes(modelNo.replace(/-/g, '').replace(/./g, ''))) {
             matchLaptop = laptopArray[i]
             break
         }
@@ -118,25 +118,25 @@ async function scrapeTrendyolLaptop(url, modelNo) {
 
     const laptop = await page.evaluate(() => {
 
-        const attributeNames = Array.from(document.querySelectorAll(".detail-attr-item span:nth-child(1)")).map(el => el.textContent)
-        const attributeValues = Array.from(document.querySelectorAll(".detail-attr-item span b")).map(el => el.textContent)
+        const attributeNames = Array.from(document.querySelectorAll(".detail-attr-item span:nth-child(1)")).map(el => el?.textContent)
+        const attributeValues = Array.from(document.querySelectorAll(".detail-attr-item span b")).map(el => el?.textContent)
         let attributes = {}
         for (let i = 0; i < attributeNames.length; i++) {
             attributes[attributeNames[i]] = attributeValues[i]
         }
 
         const newObj = {
-            title: document.querySelector(".pr-new-br span").textContent,
-            imgUrl: document.querySelector(".base-product-image img").src,
-            brand: document.querySelector(".pr-new-br a").textContent,
+            title: document.querySelector(".pr-new-br span")?.textContent,
+            imgUrl: document.querySelector(".base-product-image img")?.src,
+            brand: document.querySelector(".pr-new-br a")?.textContent,
             ops: attributes["İşletim Sistemi"],
             cpuType: attributes["İşlemci Tipi"],
             cpuGen: attributes["İşlemci Nesli"],
             ram: attributes["Ram (Sistem Belleği)"],
             diskSize: attributes["SSD Kapasitesi"],
             screenSize: attributes["Ekran Boyutu"],
-            price: parseFloat(document.querySelector(".prc-dsc").textContent.split(' ')[0].replace(/\./g, '').replace(',', '.')),
-            score: document.querySelector(".tltp-avg-cnt").textContent.trim()
+            price: parseFloat(document.querySelector(".prc-dsc")?.textContent.split(' ')[0].replace(/\./g, '').replace(',', '.')),
+            score: document.querySelector(".tltp-avg-cnt")?.textContent.trim()
         }
         //console.log(newObj)
         return newObj
@@ -159,7 +159,7 @@ async function scrapeHepsiburada(modelNo) {
     await page.goto(`https://www.hepsiburada.com/ara?q=${modelNo}`, { timeout: 0 })
 
     const laptopArray = await page.evaluate(() => {
-        return Array.from(document.querySelectorAll(".moria-ProductCard-joawUM")).map(el => el.firstChild.href)
+        return Array.from(document.querySelectorAll(".moria-ProductCard-joawUM")).map(el => el?.firstChild?.href)
 
     })
 
@@ -167,7 +167,7 @@ async function scrapeHepsiburada(modelNo) {
 
     for (let i = 0; i < 5; i++) {
         //console.log(laptopArray[i])
-        if (laptopArray[i].toUpperCase().includes(modelNo/*.replace(/-/g,'').replace(/./g,'')*/)) {
+        if (laptopArray[i]?.toUpperCase().includes(modelNo?.replace(/-/g, '').replace(/./g, ''))) {
             matchLaptop = laptopArray[i]
             break
         }
@@ -197,15 +197,15 @@ async function scrapeHepsiburadaLaptop(url, modelNo) {
 
     const laptop = await page.evaluate(() => {
 
-        const attributeNames = Array.from(document.querySelectorAll(".data-list.tech-spec th")).map(el => el.textContent)
-        const attributeValues = Array.from(document.querySelectorAll(".data-list.tech-spec tr td :nth-child(1)")).map(el => el?.textContent.trim())
+        const attributeNames = Array.from(document.querySelectorAll(".data-list.tech-spec th")).map(el => el?.textContent)
+        const attributeValues = Array.from(document.querySelectorAll(".data-list.tech-spec tr td :nth-child(1)")).map(el => el?.textContent?.trim())
         let attributes = {}
         for (let i = 1; i < attributeNames.length; i++) {
             attributes[attributeNames[i]] = attributeValues[i]
         }
 
         const newObj = {
-            name: document.querySelector(".product-name")?.textContent.trim(),
+            name: document.querySelector(".product-name")?.textContent?.trim(),
             imgUrl: document.querySelector("img.product-image")?.src,
             brand: Array.from(document.querySelectorAll(".data-list.tech-spec td a"))[0]?.textContent,
             ops: attributes["İşletim Sistemi"],
@@ -215,7 +215,7 @@ async function scrapeHepsiburadaLaptop(url, modelNo) {
             diskSize: attributes["SSD Kapasitesi"],
             screenSize: attributes["Ekran Boyutu"],
             price: parseFloat(document.querySelector("[data-bind= \"markupText:'currentPriceBeforePoint'\"]")?.textContent.split(' ')[0].replace(/\./g, '').replace(',', '.')),
-            score: document.querySelector(".rating-star")?.textContent.trim()
+            score: document.querySelector(".rating-star")?.textContent?.trim()
         }
         return newObj
     })
@@ -234,7 +234,7 @@ async function scrapeTeknosa(modelNo) {
     await page.goto(`https://www.teknosa.com/arama/?s=${modelNo}`, { timeout: 0 })
 
     const laptopArray = await page.evaluate(() => {
-        return Array.from(document.querySelectorAll(".prd-link")).map(el => el.href)
+        return Array.from(document.querySelectorAll(".prd-link")).map(el => el?.href)
 
     })
 
@@ -242,7 +242,7 @@ async function scrapeTeknosa(modelNo) {
 
     for (let i = 0; i < 5; i++) {
         // console.log(laptopArray[i])
-        if (laptopArray[i].toUpperCase().includes(modelNo/*.replaceAll('-','').replaceAll('.',''))*/)) {
+        if (laptopArray[i].toUpperCase().includes(modelNo?.replaceAll('-', '').replaceAll('.', ''))) {
             matchLaptop = laptopArray[i]
             break
         }
@@ -269,8 +269,8 @@ async function scrapeTeknosaLaptop(url, modelNo) {
 
     const laptop = await page.evaluate(() => {
 
-        const attributeNames = Array.from(document.querySelectorAll(".ptf-body th")).map(el => el.textContent)
-        const attributeValues = Array.from(document.querySelectorAll(".ptf-body td")).map(el => el.textContent)
+        const attributeNames = Array.from(document.querySelectorAll(".ptf-body th")).map(el => el?.textContent)
+        const attributeValues = Array.from(document.querySelectorAll(".ptf-body td")).map(el => el?.textContent)
         let attributes = {}
         for (let i = 0; i < attributeNames.length; i++) {
             attributes[attributeNames[i]] = attributeValues[i]
@@ -278,9 +278,9 @@ async function scrapeTeknosaLaptop(url, modelNo) {
         //console.log(node)
         //document.querySelector(".prd").querySelector("h3.prd-title").textConten
         const newObj = {
-            name: document.querySelector("h2.name").textContent,
+            name: document.querySelector("h2.name")?.textContent,
             //imgUrl: document.querySelector("img.entered.loaded.lazy-loaded").src,
-            brand: document.querySelector("h2.name").textContent.split(' ')[0],
+            brand: document.querySelector("h2.name")?.textContent.split(' ')[0],
             //modelNo: modelNo,
             ops: attributes["İşletim Sistemi Yazılımı"],
             cpuType: attributes["İşlemci"],
@@ -289,7 +289,7 @@ async function scrapeTeknosaLaptop(url, modelNo) {
             diskSize: attributes["SSD Kapasitesi"],
             diskType: attributes["Disk Türü"],
             screenSize: attributes["Ekran Boyutu"],
-            price: parseFloat(document.querySelector(".prc.prc-last").textContent.split(' ')[0].replace(/\./g, '').replace(',', '.'))
+            price: parseFloat(document.querySelector(".prc.prc-last")?.textContent?.split(' ')[0].replace(/\./g, '').replace(',', '.'))
         }
         return newObj
     })

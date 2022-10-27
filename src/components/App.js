@@ -20,6 +20,11 @@ function ProductDetailsEC() {
     return <AppDetailsEC id={id} />;
 }
 
+// function UpdateDetails() {
+//     let { id } = useParams();
+//     return <EditDetails id={id} />;
+// }
+
 function App() {
 
     return (<div>
@@ -37,6 +42,10 @@ function App() {
             <Route path='/admin' element={<Admin />} />
 
             <Route path='/editLaptop' element={<EditDetails />} />
+
+            {/* <Route path='/editLaptop/:id' element={<UpdateDetails />} /> */}
+
+            {/* <Route path='/products/delete/:id' element={<UpdateDetails />} /> */}
 
             <Route path='/products/:id' element={<ProductDetailsEC />} />
 

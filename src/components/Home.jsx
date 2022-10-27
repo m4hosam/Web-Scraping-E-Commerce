@@ -7,8 +7,13 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import ButtonGroup from '@mui/material/ButtonGroup';
+import LinearProgress from '@mui/material/LinearProgress';
+
+
+
 
 function CreateCard(cardDetails) {
+
     return <Grid item xs={12} sm={6} md={3} >
         <Card
             key={cardDetails._id}
@@ -26,38 +31,47 @@ function CreateCard(cardDetails) {
 
 function MediaCard() {
     const [laptops, setlaptop] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
+        setLoading(true);
         axios.get("http://localhost:5000/").then((response) => {
             setlaptop(response.data);
         });
+        setLoading(false)
     }, []);
+
 
     async function handleSearch(event) {
         console.log(event.target.value);
         const post = { searchKey: event.target.value }
-
+        setLoading(true);
         await axios.post("http://localhost:5000/search", post)
             .then((response) => {
                 setlaptop(response.data);
                 // console.log(response.data)
             });
+        setLoading(false);
     }
     async function handlePriceToLow(event) {
+        setLoading(true);
         await axios.get("http://localhost:5000/priceToLow")
             .then((response) => {
                 setlaptop(response.data);
                 // console.log(response.data)
             });
+        setLoading(false);
     }
     async function handlePriceToHigh(event) {
-
+        setLoading(true);
         await axios.get("http://localhost:5000/priceToHigh")
             .then((response) => {
                 setlaptop(response.data);
                 // console.log(response.data)
             });
+        setLoading(false);
     }
+
     return (
         <Box
             sx={{
@@ -82,9 +96,17 @@ function MediaCard() {
                 <Button onClick={handlePriceToHigh}>En Düşük Fiyat</Button>
                 <Button onClick={handlePriceToLow}>En Yüksek Fiyat</Button>
             </ButtonGroup>
+            {loading ? (
+                <Box sx={{ width: '80%' }}>
+                    <LinearProgress />
+                </Box>
+            ) : (
+                <div></div>
+            )}
             <Grid container spacing={2} style={{ width: '90%', marginTop: '2rem' }}>
                 {laptops.map(CreateCard)}
             </Grid>
+
         </Box>
 
     );

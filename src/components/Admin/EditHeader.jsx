@@ -11,7 +11,7 @@ import TextField from '@mui/material/TextField';
 
 
 function Header(props) {
-
+    console.log("brand" + props.brand)
     return (
         <Box
             sx={{
