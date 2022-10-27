@@ -47,7 +47,7 @@ function Header(props) {
                                 {props.name}
                             </Typography>
                             <Typography gutterBottom variant="h5" component="div">
-                                {props.price}
+                                {props.price} TL
                             </Typography>
                         </CardContent>
 

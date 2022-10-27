@@ -23,7 +23,7 @@ function Cardfunc(props) {
                     {props.name}
                 </Typography>
                 <Typography gutterBottom variant="h6" component="div" color={'#EB1D36'}>
-                    {props.price}
+                    {props.price} TL
                 </Typography>
 
 

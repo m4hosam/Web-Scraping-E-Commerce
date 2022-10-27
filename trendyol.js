@@ -50,7 +50,7 @@ async function scrapePage(url, modelNo) {
     const bestLaptop = laptopCardsWeb[0]
 
 
-    if (bestLaptop?.title?.toUpperCase().includes(modelNo.trim())) {
+    if (bestLaptop?.title?.toUpperCase().includes(modelNo.trim()) && parseInt(bestLaptop?.price) > 2000) {
         const seller = new Seller({
             productUrl: bestLaptop.url,
             price: bestLaptop.price,

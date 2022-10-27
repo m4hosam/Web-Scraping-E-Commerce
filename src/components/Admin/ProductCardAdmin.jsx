@@ -11,7 +11,6 @@ import { useNavigate } from "react-router-dom";
 function Cardfunc(props) {
     const navigate = useNavigate();
 
-
     async function handleEdit(event) {
         console.log(props.id)
         await axios.get(`http://localhost:5000/products/${props.id}`).then((response) => {
@@ -19,6 +18,20 @@ function Cardfunc(props) {
             navigate("/editLaptop", { state: response.data });
         });
     }
+    async function handleDelete(event) {
+        // window.confirm("Are You sure")
+        if (window.confirm("Are You sure") == true) {
+            console.log(props.id)
+            await axios.get(`http://localhost:5000/products/delete/${props.id}`).then((response) => {
+                console.log(response.data)
+                navigate("/products");
+            });
+        } else {
+            console.log("You canceled!")
+        }
+
+    }
+
 
 
     return (
@@ -45,7 +58,7 @@ function Cardfunc(props) {
             <CardActions>
                 <Button variant="contained" style={{ margin: "8px" }} href={"/products/" + props.id}>Details</Button>
                 <Button variant="contained" style={{ margin: "8px", backgroundColor: "#006f3c" }} onClick={handleEdit}>Edit</Button>
-                <Button variant="contained" style={{ margin: "8px", backgroundColor: "#bf212f" }} href={"/products/" + props.id}>Delete</Button>
+                <Button variant="contained" style={{ margin: "8px", backgroundColor: "#bf212f" }} onClick={handleDelete}>Delete</Button>
             </CardActions>
         </Card >
     );

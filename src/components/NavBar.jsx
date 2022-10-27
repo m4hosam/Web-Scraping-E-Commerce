@@ -5,6 +5,7 @@ import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
+import { Link } from "react-router-dom";
 
 
 function DrawerAppBar() {
@@ -19,17 +20,17 @@ function DrawerAppBar() {
                         component="div"
                         sx={{ flexGrow: 1, display: { sm: 'block' } }}
                     >
-                        Logo
+                        <Link to='/' style={{ color: '#fff', textDecoration: 'none' }}>Logo</Link>
                     </Typography>
                     <Box sx={{ display: { sm: 'block' } }}>
-                        <Button href='/' sx={{ color: '#fff' }}>
-                            Home
+                        <Button>
+                            <Link to='/' style={{ color: '#fff', textDecoration: 'none' }}>Home</Link>
                         </Button>
-                        <Button href='/products' sx={{ color: '#fff' }}>
-                            E-Commerce
+                        <Button>
+                            <Link to='/products' style={{ color: '#fff', textDecoration: 'none' }}>E-Commerce</Link>
                         </Button>
-                        <Button href='/admin' sx={{ color: '#fff' }}>
-                            Admin
+                        <Button>
+                            <Link to='/admin' style={{ color: '#fff', textDecoration: 'none' }}>Admin</Link>
                         </Button>
                     </Box>
                 </Toolbar>

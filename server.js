@@ -1,5 +1,5 @@
 const { Laptop, Seller, Product } = require("./Database")
-const { priceDecending, priceAscending, sellersPriceLowToHigh, sellersPriceHighToLow, scrapSites, sellersDynamicSearchArray, dynamicSearchArray } = require("./allFunctions")
+const { priceDecending, priceAscending, sellersPriceLowToHigh, getProductByModelNo, sellersPriceHighToLow, scrapSites, sellersDynamicSearchArray, dynamicSearchArray } = require("./allFunctions")
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
@@ -15,7 +15,9 @@ app.get('/favicon.ico', (req, res) => {
 })
 
 
-scrapSites();
+// scrapSites();
+
+
 
 
 //--------------------
@@ -58,7 +60,7 @@ app.get('/products', cors(), async function (req, res) {
 
 app.post('/products/search', cors(), async function (req, res) {
     const search = req.body.searchKey;
-    console.log("searchKey: " + search)
+    // console.log("searchKey: " + search)
     Product.find({}).exec(async function (err, docs) {
         if (err) {
             console.log(err);
@@ -66,7 +68,7 @@ app.post('/products/search', cors(), async function (req, res) {
         else {
             docs = dynamicSearchArray(docs, search)
 
-            console.log(docs)
+            // console.log(docs)
             res.send(docs);
 
 
@@ -102,7 +104,7 @@ app.get('/products/priceToHigh', cors(), async function (req, res) {
 })
 
 app.get('/products/:id', cors(), async function (req, res) {
-    console.log("Hit")
+    // console.log("Hit")
     Product.findOne({ _id: req.params.id }, async function (err, docs) {
         if (err) {
             console.log("Error id params" + err);
@@ -116,36 +118,16 @@ app.get('/products/:id', cors(), async function (req, res) {
     })
 })
 
-app.post('/adminSearch', async function (req, res) {
-    const key = req.body.searchKey;
-    console.log("THe key: " + key)
-    // First search in the DB if there -> Get -> Update
-    // We can Make an Update route
-    Product.find({}).exec(async function (err, docs) {
-        if (err) {
-            console.log(err);
-        }
-        else {
-            docs = dynamicSearchArray(docs, key)
-            if (docs.length !== 0) {
-                console.log(docs)
-                res.send(docs[0]);
-            }
-            else {
-                const p = await scrapeForLaptops(key)
-                res.send(p);
-            }
-            // console.log(docs)
-        }
-    })
-    // Else : Scrap the websites for this key
-    // Send the first match object
-    // Hit the publish route
-
-
+app.get('/products/delete/:id', cors(), async function (req, res) {
+    // console.log("Hit")
+    await Product.findByIdAndRemove(req.params.id)
+    res.send("done")
 })
 
+app.post('/adminSearch', getProductByModelNo)
+
 app.post('/publish', async function (req, res) {
+    // Hit by scraping -> new laptop is being saved <- 
     const product = req.body;
     console.log("Id: " + product._id)
     // Publish route gets hit in the scraping section 
@@ -157,10 +139,14 @@ app.post('/publish', async function (req, res) {
 
 // not working yet
 app.post('/update', async function (req, res) {
-    const key = req.body;
-    // Update route gets hit in the updating product section 
-    // 
-    console.log(key);
+    const product = req.body;
+    // console.log("Id: " + product._id)
+    // Publish route gets hit in the scraping section 
+    await Product.findByIdAndUpdate(product._id, product)
+    // const newProduct = new Product(product)
+    // await newProduct.save()
+    // console.log(product);
+    res.send("Done")
 })
 
 app.get('/', cors(), async function (req, res) {

@@ -10,29 +10,7 @@ import Button from '@mui/material/Button';
 
 function EditDetails(props) {
     const navigate = useNavigate();
-    // let laptop = {}
-
     const laptop = useLocation().state;
-    // const [laptop2, setlaptop2] = useState([]);
-
-    // console.log("Hit")
-    // useEffect(() => {
-    //     if (props.id) {
-    //         axios.get(`http://localhost:5000/products/${props.id}`).then((response) => {
-    //             setlaptop2(response.data);
-    //             console.log(response.data)
-    //         });
-    //     }
-    // }, []);
-
-    // console.log("laptop1")
-    // console.log(laptop1)
-    // console.log("laptop2")
-    // console.log(laptop2)
-    // laptop = laptop1 === null ? laptop2 : laptop1
-
-
-
 
     const [brand, setbrand] = useState(laptop.brand);
     const [name, setname] = useState(laptop.name);
@@ -105,7 +83,8 @@ function EditDetails(props) {
         };
         // console.log("post----------");
         // console.log(post);
-        await axios.post("http://localhost:5000/publish", post).then((response) => {
+        const routeName = laptop._id ? "update" : "publish"
+        await axios.post(`http://localhost:5000/${routeName}`, post).then((response) => {
             // console.log(response.data)
             // console.log("----------------------------\n");
             // navigate("/editLaptop", { state: response.data });
@@ -132,7 +111,7 @@ function EditDetails(props) {
                 laptop={laptop}
                 array={array}
             />
-            <Button type='submit' variant="contained" style={{ margin: '1rem 0' }}>Publish</Button>
+            <Button type='submit' variant="contained" style={{ margin: '1rem 0' }}>{laptop._id ? "Update" : "Publish"}</Button>
         </form>
 
     </>
