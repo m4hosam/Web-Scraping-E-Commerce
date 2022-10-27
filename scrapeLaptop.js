@@ -1,4 +1,106 @@
 const puppeteer = require('puppeteer');
+const { Laptop, Seller, Product } = require("./Database")
+
+async function createLaptopToCimri(n11, trendyol, hepsiburada, teknosa) {
+    let name = n11 ? n11.name : trendyol ? trendyol.name : hepsiburada ? hepsiburada.name : teknosa ? teknosa.name : null;
+    let modelNo = n11 ? n11.modelNo : trendyol ? trendyol.modelNo : hepsiburada ? hepsiburada.modelNo : teknosa ? teknosa.modelNo : null;
+    let imgUrl = n11 ? n11.imgUrl : trendyol ? trendyol.imgUrl : hepsiburada ? hepsiburada.imgUrl : teknosa ? teknosa.imgUrl : null;
+    let brand = n11 ? n11.brand : trendyol ? trendyol.brand : hepsiburada ? hepsiburada.brand : teknosa ? teknosa.brand : null;
+    let ops = n11 ? n11.ops : trendyol ? trendyol.ops : hepsiburada ? hepsiburada.ops : teknosa ? teknosa.ops : null;
+    let cpuType = n11 ? n11.cpuType : trendyol ? trendyol.cpuType : hepsiburada ? hepsiburada.cpuType : teknosa ? teknosa.cpuType : null;
+    let cpuGen = n11 ? n11.cpuGen : trendyol ? trendyol.cpuGen : hepsiburada ? hepsiburada.cpuGen : teknosa ? teknosa.cpuGen : null;
+    let ram = n11 ? n11.ram : trendyol ? trendyol.ram : hepsiburada ? hepsiburada.ram : teknosa ? teknosa.ram : null;
+    let diskSize = n11 ? n11.diskSize : trendyol ? trendyol.diskSize : hepsiburada ? hepsiburada.diskSize : teknosa ? teknosa.diskSize : null;
+    let diskType = n11 ? n11.diskType : trendyol ? trendyol.diskType : hepsiburada ? hepsiburada.diskType : teknosa ? teknosa.diskType : null;
+    let screenSize = n11 ? n11.screenSize : trendyol ? trendyol.screenSize : hepsiburada ? hepsiburada.screenSize : teknosa ? teknosa.screenSize : null;
+    if (name) {
+        const laptop = new Laptop({
+            brand: brand,
+            name: name,
+            imgUrl: imgUrl,
+            modelNo: modelNo,
+            ops: ops,
+            cpuType: cpuType,
+            cpuGen: cpuGen,
+            ram: ram,
+            diskSize: diskSize,
+            diskType: diskType,
+            screenSize: screenSize,
+            sellers: []
+        })
+        console.log("-------------LAptop-----------")
+        console.log(laptop)
+        await laptop.save();
+    }
+
+
+    await Laptop.findOne({ name: name }, async function (err, docs) {
+        if (!docs) {
+            console.log("error no matches")
+            // console.log(docs)
+        }
+        else {
+            if (n11) {
+                const sellerN11 = new Seller({
+                    productUrl: n11.productUrl,
+                    price: n11.price,
+                    seller: "n11"
+                })
+                console.log("-------------N11-----------")
+                console.log(sellerN11)
+                await sellerN11.save();
+                docs.sellers.push(sellerN11);
+                await docs.save();
+                console.log("saved...")
+            }
+            if (trendyol) {
+                const sellerTrendyol = new Seller({
+                    productUrl: trendyol.productUrl,
+                    price: trendyol.price,
+                    seller: "trendyol"
+                })
+                console.log("-------------trendyol-----------")
+                console.log(sellerTrendyol)
+
+                await sellerTrendyol.save();
+                docs.sellers.push(sellerTrendyol);
+                await docs.save();
+                console.log("saved...")
+            }
+            if (hepsiburada) {
+                const sellerHepsiburada = new Seller({
+                    productUrl: hepsiburada.productUrl,
+                    price: hepsiburada.price,
+                    seller: "hepsiburada"
+                })
+                console.log("-------------hepsiburada-----------")
+                console.log(sellerHepsiburada)
+
+                await sellerHepsiburada.save();
+                docs.sellers.push(sellerHepsiburada);
+                await docs.save();
+                console.log("saved...")
+            }
+            if (teknosa) {
+                const sellerTeknosa = new Seller({
+                    productUrl: teknosa.productUrl,
+                    price: teknosa.price,
+                    seller: "teknosa"
+                })
+                console.log("-------------teknosa-----------")
+                console.log(sellerTeknosa)
+
+                await sellerTeknosa.save();
+                docs.sellers.push(sellerTeknosa);
+                await docs.save();
+                console.log("saved...")
+            }
+        }
+    }).clone().catch(function (err) { console.log(err) })
+
+}
+
+
 
 
 async function scrapeN11(modelNo) {
@@ -69,6 +171,7 @@ async function scrapeN11Laptop(url, modelNo) {
         return newObj
     })
     laptop["modelNo"] = modelNo
+    laptop.productUrl = url
 
     browser.close()
 
@@ -126,7 +229,7 @@ async function scrapeTrendyolLaptop(url, modelNo) {
         }
 
         const newObj = {
-            title: document.querySelector(".pr-new-br span")?.textContent,
+            name: document.querySelector(".pr-new-br span")?.textContent,
             imgUrl: document.querySelector(".base-product-image img")?.src,
             brand: document.querySelector(".pr-new-br a")?.textContent,
             ops: attributes["İşletim Sistemi"],
@@ -142,6 +245,7 @@ async function scrapeTrendyolLaptop(url, modelNo) {
         return newObj
     })
     laptop["modelNo"] = modelNo
+    laptop.productUrl = url
 
     browser.close()
 
@@ -220,6 +324,7 @@ async function scrapeHepsiburadaLaptop(url, modelNo) {
         return newObj
     })
     laptop["modelNo"] = modelNo
+    laptop.productUrl = url
 
     browser.close()
 
@@ -294,7 +399,7 @@ async function scrapeTeknosaLaptop(url, modelNo) {
         return newObj
     })
     laptop["modelNo"] = modelNo
-
+    laptop.productUrl = url
     browser.close()
 
     return new Promise((resolve, reject) => {
@@ -306,13 +411,9 @@ async function scrapeForLaptops(modelNo) {
 
 
     const n11 = await scrapeN11(modelNo)
-    console.log(n11)
     const trendyol = await scrapeTrendyol(modelNo)
-    console.log(trendyol)
     const hepsiburada = await scrapeHepsiburada(modelNo)
-    console.log(hepsiburada)
     const teknosa = await scrapeTeknosa(modelNo)
-    console.log(teknosa)
 
     hepsiburada["diskType"] = n11["diskType"]
     trendyol["diskType"] = n11["diskType"]
@@ -320,6 +421,13 @@ async function scrapeForLaptops(modelNo) {
     teknosa["cpuGen"] = trendyol["cpuGen"]
     n11["cpuGen"] = trendyol["cpuGen"]
     hepsiburada["cpuGen"] = trendyol["cpuGen"]
+
+    console.log(n11)
+    console.log(trendyol)
+    console.log(hepsiburada)
+    console.log(teknosa)
+
+    createLaptopToCimri(n11, trendyol, hepsiburada, teknosa)
 
     const arr = [n11, trendyol, hepsiburada, teknosa]
     let cheapest = n11

@@ -3,6 +3,7 @@ const trendyol = require('./trendyol')
 const teknosa = require('./teknosa')
 const hepsiburada = require('./hepsiburada')
 const { Laptop, Seller, Product } = require("./Database")
+const scrapeForLaptops = require('./scrapeLaptop')
 
 
 
@@ -168,6 +169,9 @@ async function getProductByModelNo(req, res) {
         }
     })
 }
+
+
+
 
 
 

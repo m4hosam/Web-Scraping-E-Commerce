@@ -38,6 +38,7 @@ const laptopSchema = new mongoose.Schema({
 
 const productSchema = new mongoose.Schema({
     name: String,
+    productUrl: String,
     imgUrl: String,
     brand: String,
     modelNo: String,

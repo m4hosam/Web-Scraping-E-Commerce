@@ -4,7 +4,7 @@ const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
 const cors = require("cors")
-const scrapeForLaptops = require('./scrapeLaptop.js')
+
 // important to make bodyParser work effieciently
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json())
@@ -20,31 +20,8 @@ app.get('/favicon.ico', (req, res) => {
 
 
 
-//--------------------
 
-
-const newProduct2 = {
-    name: "MSI Modern 15 A11MU-839XTR Intel Core i5 ",
-    imgUrl: "https://productimages.hepsiburada.net/s/139/1500/110000091575803.jpg",
-    brand: "ASUS",
-    modelNo: "G533ZW-AS94",
-    ops: "Free Dos",
-    cpuType: "Intel Core i7",
-    cpuGen: "11",
-    ram: "16 GB",
-    diskSize: "1 TB",
-    diskType: "SSD",
-    screenSize: "15.6 Inches",
-    price: "50,000 TL"
-}
-
-
-//-------------------
-
-// Home Routes
-
-
-
+// product Routes
 
 app.get('/products', cors(), async function (req, res) {
     // await newProduct.save();
