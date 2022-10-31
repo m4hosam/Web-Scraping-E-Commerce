@@ -1,0 +1,11 @@
+.CardPrice {
+  font-size: .6rem;
+  color: orange;
+}
+
+.container {
+  margin: 4rem 4rem;
+  display: flex;
+  flex-direction: row;
+
+}
