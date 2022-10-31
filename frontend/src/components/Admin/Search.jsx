@@ -32,7 +32,7 @@ function Admin() {
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        axios.get('http://localhost:5000/products').then((response) => {
+        axios.get('https://shielded-woodland-84794.herokuapp.com/products').then((response) => {
             setproducts(response.data);
         });
     }, []);
@@ -44,7 +44,7 @@ function Admin() {
         console.log(event.target.value);
         const post = { searchKey: event.target.value }
 
-        await axios.post("http://localhost:5000/products/search", post)
+        await axios.post("https://shielded-woodland-84794.herokuapp.com/products/search", post)
             .then((response) => {
                 setproducts(response.data);
                 // console.log(response.data)
@@ -57,7 +57,7 @@ function Admin() {
         event.preventDefault();
         const post = { searchKey: name }
         setLoading(true);
-        await axios.post("http://localhost:5000/adminSearch", post)
+        await axios.post("https://shielded-woodland-84794.herokuapp.com/adminSearch", post)
             .then((response) => {
                 // console.log(response.data)
                 // console.log("----------------------------\n");

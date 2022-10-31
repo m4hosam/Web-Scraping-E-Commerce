@@ -27,7 +27,7 @@ function Details() {
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        axios.get('http://localhost:5000/products').then((response) => {
+        axios.get('https://shielded-woodland-84794.herokuapp.com/products').then((response) => {
             setproducts(response.data);
         });
     }, []);
@@ -38,7 +38,7 @@ function Details() {
         console.log(event.target.value);
         const post = { searchKey: event.target.value }
 
-        await axios.post("http://localhost:5000/products/search", post)
+        await axios.post("https://shielded-woodland-84794.herokuapp.com/products/search", post)
             .then((response) => {
                 setproducts(response.data);
                 // console.log(response.data)
@@ -47,7 +47,7 @@ function Details() {
     }
     async function handlePriceToLow(event) {
         setLoading(true);
-        await axios.get("http://localhost:5000/products/priceToLow")
+        await axios.get("https://shielded-woodland-84794.herokuapp.com/products/priceToLow")
             .then((response) => {
                 setproducts(response.data);
                 // console.log(response.data)
@@ -56,7 +56,7 @@ function Details() {
     }
     async function handlePriceToHigh(event) {
         setLoading(true);
-        await axios.get("http://localhost:5000/products/priceToHigh")
+        await axios.get("https://shielded-woodland-84794.herokuapp.com/products/priceToHigh")
             .then((response) => {
                 setproducts(response.data);
                 // console.log(response.data)

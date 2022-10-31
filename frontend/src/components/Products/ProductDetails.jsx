@@ -12,7 +12,7 @@ function Details(props) {
     const [laptop, setlaptop] = useState([]);
 
     useEffect(() => {
-        axios.get(`http://localhost:5000/products/${id}`).then((response) => {
+        axios.get(`https://shielded-woodland-84794.herokuapp.com/products/${id}`).then((response) => {
             setlaptop(response.data);
         });
     }, []);

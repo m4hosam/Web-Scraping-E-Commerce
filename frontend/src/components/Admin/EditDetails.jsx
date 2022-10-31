@@ -84,7 +84,7 @@ function EditDetails(props) {
         // console.log("post----------");
         // console.log(post);
         const routeName = laptop._id ? "update" : "publish"
-        await axios.post(`http://localhost:5000/${routeName}`, post).then((response) => {
+        await axios.post(`https://shielded-woodland-84794.herokuapp.com/${routeName}`, post).then((response) => {
             // console.log(response.data)
             // console.log("----------------------------\n");
             // navigate("/editLaptop", { state: response.data });

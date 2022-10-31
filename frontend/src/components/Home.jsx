@@ -35,7 +35,7 @@ function MediaCard() {
 
     useEffect(() => {
         setLoading(true);
-        axios.get("http://localhost:5000/").then((response) => {
+        axios.get("https://shielded-woodland-84794.herokuapp.com/").then((response) => {
             setlaptop(response.data);
         });
         setLoading(false)
@@ -46,7 +46,7 @@ function MediaCard() {
         console.log(event.target.value);
         const post = { searchKey: event.target.value }
         setLoading(true);
-        await axios.post("http://localhost:5000/search", post)
+        await axios.post("https://shielded-woodland-84794.herokuapp.com/search", post)
             .then((response) => {
                 setlaptop(response.data);
                 // console.log(response.data)
@@ -55,7 +55,7 @@ function MediaCard() {
     }
     async function handlePriceToLow(event) {
         setLoading(true);
-        await axios.get("http://localhost:5000/priceToLow")
+        await axios.get("https://shielded-woodland-84794.herokuapp.com/priceToLow")
             .then((response) => {
                 setlaptop(response.data);
                 // console.log(response.data)
@@ -64,7 +64,7 @@ function MediaCard() {
     }
     async function handlePriceToHigh(event) {
         setLoading(true);
-        await axios.get("http://localhost:5000/priceToHigh")
+        await axios.get("https://shielded-woodland-84794.herokuapp.com/priceToHigh")
             .then((response) => {
                 setlaptop(response.data);
                 // console.log(response.data)

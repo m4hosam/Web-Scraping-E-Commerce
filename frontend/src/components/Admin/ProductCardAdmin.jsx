@@ -13,7 +13,7 @@ function Cardfunc(props) {
 
     async function handleEdit(event) {
         console.log(props.id)
-        await axios.get(`http://localhost:5000/products/${props.id}`).then((response) => {
+        await axios.get(`https://shielded-woodland-84794.herokuapp.com/products/${props.id}`).then((response) => {
             console.log(response.data)
             navigate("/editLaptop", { state: response.data });
         });
@@ -22,7 +22,7 @@ function Cardfunc(props) {
         // window.confirm("Are You sure")
         if (window.confirm("Are You sure") == true) {
             console.log(props.id)
-            await axios.get(`http://localhost:5000/products/delete/${props.id}`).then((response) => {
+            await axios.get(`https://shielded-woodland-84794.herokuapp.com/products/delete/${props.id}`).then((response) => {
                 console.log(response.data)
                 navigate("/products");
             });
