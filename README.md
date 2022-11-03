@@ -44,8 +44,24 @@ E-Commerce Section
 Admin Section
 ![](./Images/admin.png)
 
+## Installation
 
+Use npm package manager to install Used Packages in both backend and frontend directories.
 
+```bash
+npm i
+```
+
+In the frontend directory run:
+
+```bash
+npm start
+```
+In the backend directory run:
+
+```bash
+node server.js
+```
 
 
 
